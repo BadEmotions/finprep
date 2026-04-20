@@ -464,6 +464,523 @@ const QUESTIONS = [
     ],
     idealAnswer: "EBIT = $80M. NOPAT = $60M. FCF = $60 + $20 – $15 – $10 = $55M. TV = $55M × 1.03 / (10% – 3%) = $809M. PV of FCF = $50M. PV of TV = $735M. Enterprise Value = ~$785M."
   },
+  {
+    id: 24, slug: 'purchase-price-allocation',
+    title: "Walk me through a purchase price allocation in M&A",
+    difficulty: "hard", category: "ib", type: "structured",
+    prompt: "A company acquires a target for $500M. The target's book value of net assets is $200M. Walk through how you would allocate the purchase price.",
+    answerStructure: [
+      { num: "1", text: "Start with book value of net assets" },
+      { num: "2", text: "Step up tangible assets to fair value" },
+      { num: "3", text: "Identify and value intangible assets" },
+      { num: "4", text: "Calculate goodwill as the remainder" },
+      { num: "5", text: "Explain the tax and financial statement impact" },
+    ],
+    rubric: [
+      { item: "Book value of net assets as starting point", keywords: ["book value","net assets","starting point","balance sheet","carrying value","historical cost","recorded value"], weight: 1, bullet: "Start with target's book value of net assets — what's already on the balance sheet." },
+      { item: "Step up assets to fair value", keywords: ["step up","fair value","mark to market","revalue","write up","asset step up","fair market value","appraise"], weight: 2, bullet: "Step up tangible assets (PP&E, inventory) to fair value — creates deferred tax liability." },
+      { item: "Identify intangible assets (brand, patents, customer relationships)", keywords: ["intangible","brand","patent","customer relationship","trademark","technology","trade name","license","intellectual property","identifiable intangible"], weight: 2, bullet: "Identify intangibles separately — customer lists, patents, brand names, technology." },
+      { item: "Goodwill = purchase price minus fair value of net identifiable assets", keywords: ["goodwill","remainder","residual","purchase price minus","excess","plug","leftover","500 minus","300 million"], weight: 2, bullet: "Goodwill = $500M – FV of net identifiable assets. It's the plug — what can't be separately identified." },
+      { item: "Deferred tax liability created from asset step-ups", keywords: ["deferred tax","dtl","tax liability","step up creates","tax impact","book vs tax","higher depreciation","tax shield","future tax"], weight: 2, bullet: "Asset step-ups create DTLs — higher book depreciation vs tax basis creates future tax obligation." },
+    ],
+    idealAnswer: "PPA: (1) Start with book value $200M; (2) Step up PP&E and inventory to FV — say $250M; (3) Identify intangibles (customer lists, brand) — say $100M; (4) Goodwill = $500M – $350M = $150M. Step-ups create DTLs. Goodwill not amortized under GAAP."
+  },
+  {
+    id: 25, slug: 'lbo-debt-structure',
+    title: "Explain the debt structure in a typical LBO",
+    difficulty: "hard", category: "pe", type: "short",
+    prompt: "Walk through the different layers of debt used in an LBO, their characteristics, and why PE firms use each.",
+    answerStructure: [
+      { num: "1", text: "Name the main debt tranches from senior to junior" },
+      { num: "2", text: "Explain senior secured — term loan A/B, revolving credit" },
+      { num: "3", text: "Explain high yield bonds and mezzanine" },
+      { num: "4", text: "Explain why PE firms layer debt (maximize returns)" },
+    ],
+    rubric: [
+      { item: "Senior secured debt — term loans and revolver", keywords: ["senior secured","term loan","revolver","revolving credit","tla","tlb","first lien","secured lender","senior debt","bank debt"], weight: 2, bullet: "Senior secured: Term Loan A/B and revolver — lowest cost, first priority claim on assets." },
+      { item: "High yield bonds (unsecured, higher rate)", keywords: ["high yield","junk bond","unsecured","second lien","notes","bonds","8%","9%","10%","higher rate","below investment grade"], weight: 2, bullet: "High yield bonds: unsecured, higher interest rate, typically fixed, longer maturity." },
+      { item: "Mezzanine / PIK (most expensive, equity-like)", keywords: ["mezzanine","mezz","pik","payment in kind","subordinated","most expensive","equity kicker","warrant","hybrid","junior"], weight: 2, bullet: "Mezz/PIK: most expensive, subordinated, often includes equity warrants — used when senior capacity is maxed." },
+      { item: "Layering debt maximizes equity returns via leverage", keywords: ["leverage","amplify","return","maximize equity","more debt","less equity","higher return","financial leverage","amplifies irr","equity check smaller"], weight: 2, bullet: "Layering debt minimizes equity check → same EV gain = higher MOIC/IRR for the sponsor." },
+    ],
+    idealAnswer: "LBO debt stack: (1) Senior secured — TLA/TLB, revolver, lowest cost ~SOFR+300; (2) High yield bonds — unsecured, fixed rate ~8-10%; (3) Mezz/PIK — most expensive, equity kicker. Each tranche has different cost, seniority, and covenant package. More debt = smaller equity check = higher returns."
+  },
+  {
+    id: 26, slug: 'nol-in-ma',
+    title: "How do NOLs affect an M&A transaction?",
+    difficulty: "hard", category: "ib", type: "short",
+    prompt: "Explain what net operating losses are, how they create value in M&A, and what limitations apply to their use after an acquisition.",
+    answerStructure: [
+      { num: "1", text: "Define NOLs and how they arise" },
+      { num: "2", text: "Explain why they're valuable in M&A (future tax shield)" },
+      { num: "3", text: "Explain Section 382 limitation" },
+      { num: "4", text: "State the impact on purchase price" },
+    ],
+    rubric: [
+      { item: "NOLs are tax losses carried forward to offset future income", keywords: ["net operating loss","nol","loss carryforward","tax loss","carry forward","offset income","future taxable income","reduce taxes","tax asset"], weight: 2, bullet: "NOLs = cumulative tax losses that can be carried forward to offset future taxable income." },
+      { item: "NOLs create value as a deferred tax asset", keywords: ["deferred tax asset","dta","future tax savings","tax shield","value","worth","npv","present value of nol","tax benefit"], weight: 2, bullet: "NOLs create value — a $100M NOL at 25% tax rate = $25M DTA (subject to realizability)." },
+      { item: "Section 382 limits NOL usage after ownership change", keywords: ["section 382","382","ownership change","limitation","annual limit","restricted","cap","irs","change of control","50%"], weight: 3, bullet: "Section 382: if >50% ownership change, annual NOL usage is capped at the company's value × long-term tax-exempt rate." },
+      { item: "NOLs can increase purchase price in negotiations", keywords: ["purchase price","higher price","bid","value nols","factor into price","buyer pays for","acquisition price","incremental value"], weight: 1, bullet: "Acquirer may pay a premium to capture the NOL benefit — modeled as PV of future tax savings." },
+    ],
+    idealAnswer: "NOLs = cumulative tax losses carried forward. In M&A they're valuable — $100M NOL at 25% = $25M tax asset. BUT Section 382 limits annual usage after >50% ownership change to: company value × AFR. Acquirer may pay up for NOLs but must model Section 382 haircut carefully."
+  },
+  {
+    id: 27, slug: 'normalized-ebitda',
+    title: "What is normalized EBITDA and why does it matter in M&A?",
+    difficulty: "medium", category: "ib", type: "short",
+    prompt: "Explain what normalized EBITDA is, what kinds of adjustments are made, and why buyers and sellers disagree on it.",
+    answerStructure: [
+      { num: "1", text: "Define normalized EBITDA" },
+      { num: "2", text: "Common addbacks — one-time items, owner comp, SBC" },
+      { num: "3", text: "Why sellers push for higher normalized EBITDA" },
+      { num: "4", text: "Why buyers push back on aggressive addbacks" },
+    ],
+    rubric: [
+      { item: "Normalized EBITDA removes one-time and non-recurring items", keywords: ["normalized","one-time","non-recurring","adjusted ebitda","addback","remove","strip out","clean ebitda","recurring","sustainable"], weight: 2, bullet: "Normalized EBITDA = EBITDA adjusted to reflect the true recurring earnings power of the business." },
+      { item: "Common addbacks: restructuring, legal costs, owner comp, SBC", keywords: ["restructuring","legal","litigation","owner compensation","above market","sbc","stock comp","one time","non cash","write off","transaction cost","advisory fee"], weight: 2, bullet: "Common addbacks: restructuring charges, legal settlements, excess owner comp, one-time consulting fees." },
+      { item: "Sellers want higher EBITDA to justify higher purchase price", keywords: ["seller","higher price","maximize","inflate","push for","aggressive","add more back","higher multiple","valuation","more addbacks"], weight: 2, bullet: "Sellers add back everything possible — each $1M addback at 10x = $10M more in purchase price." },
+      { item: "Buyers scrutinize addbacks that may recur", keywords: ["buyer","pushback","scrutinize","may recur","not truly one-time","recurring","skeptical","quality of earnings","qoe","diligence"], weight: 2, bullet: "Buyers run quality of earnings (QoE) to challenge aggressive addbacks — key diligence step." },
+    ],
+    idealAnswer: "Normalized EBITDA strips out non-recurring items to show true earnings power. Common addbacks: restructuring, legal, excess owner comp, one-time costs. Sellers push for maximum addbacks — each $1M at 10x = $10M purchase price. Buyers counter with QoE analysis to challenge what's truly non-recurring."
+  },
+  {
+    id: 28, slug: 'interest-coverage-leverage',
+    title: "What are the key credit metrics used to evaluate LBO debt capacity?",
+    difficulty: "medium", category: "pe", type: "short",
+    prompt: "Walk through the key leverage and coverage ratios lenders use to assess how much debt a company can support in an LBO.",
+    answerStructure: [
+      { num: "1", text: "Name the key ratios upfront" },
+      { num: "2", text: "Leverage ratio — Total Debt / EBITDA" },
+      { num: "3", text: "Interest coverage — EBITDA / Interest Expense" },
+      { num: "4", text: "Typical thresholds and what drives them" },
+    ],
+    rubric: [
+      { item: "Total Debt / EBITDA leverage ratio", keywords: ["debt to ebitda","leverage ratio","total debt","turns","4x","5x","6x","levered","debt multiple","leverage multiple","debt capacity"], weight: 2, bullet: "Key metric: Total Debt/EBITDA. Most LBOs run 4–6x depending on industry and cash flow stability." },
+      { item: "Interest coverage ratio — EBITDA / Interest Expense", keywords: ["interest coverage","coverage ratio","ebitda over interest","times interest earned","icr","ebitda to interest","coverage","service interest","1.5x","2x"], weight: 2, bullet: "Interest coverage = EBITDA / Interest Expense. Lenders want >1.5–2x to ensure debt can be serviced." },
+      { item: "Debt / EBITDA decreases over time as debt is paid down", keywords: ["delever","debt paydown","reduces over time","improves","amortize","fcf pays","leverage falls","delevering","pay down"], weight: 2, bullet: "LBO thesis requires delevering — Debt/EBITDA should fall each year as FCF pays down debt." },
+      { item: "Covenants set limits on leverage and coverage", keywords: ["covenant","maintenance","incurrence","limit","trigger","breach","financial covenant","lender requirement","test","compliance"], weight: 2, bullet: "Lenders set maintenance covenants — breach triggers default or accelerated repayment." },
+    ],
+    idealAnswer: "Key metrics: (1) Debt/EBITDA — most LBOs at 4–6x; (2) Interest Coverage (EBITDA/Interest) — lenders want >2x; (3) FCF/Debt Service. Lenders set covenants around these. Strong, stable cash flows support higher leverage. LBO works because EBITDA grows and debt pays down — improving all ratios over hold period."
+  },
+  {
+    id: 29, slug: 'growth-equity-vs-buyout',
+    title: "What is the difference between growth equity and a leveraged buyout?",
+    difficulty: "medium", category: "pe", type: "short",
+    prompt: "Compare and contrast growth equity investing with traditional leveraged buyouts. How do the return profiles, risk, and strategies differ?",
+    answerStructure: [
+      { num: "1", text: "Define both strategies" },
+      { num: "2", text: "Key differences: leverage, ownership, stage" },
+      { num: "3", text: "Return drivers for each" },
+      { num: "4", text: "Risk profile of each" },
+    ],
+    rubric: [
+      { item: "LBO uses significant leverage, growth equity uses little to none", keywords: ["leverage","debt","no debt","little debt","growth equity no leverage","lbo uses debt","unlevered","capital structure","financed"], weight: 2, bullet: "LBO: 50–70% debt financing. Growth equity: minimal or no debt — returns come from growth not leverage." },
+      { item: "Growth equity is minority stake, LBO is typically control", keywords: ["minority","majority","control","minority stake","non-control","controlling interest","own majority","full buyout","partial ownership"], weight: 2, bullet: "Growth equity = minority stake (20–40%). LBO = majority/full control (>50%)." },
+      { item: "Growth equity targets fast-growing companies, LBO targets stable cash flows", keywords: ["fast growing","high growth","stable","cash flow","recurring revenue","mature","proven","growth company","saas","technology","established"], weight: 2, bullet: "Growth equity: high-growth companies that need capital. LBO: mature, stable FCF businesses." },
+      { item: "LBO returns driven by leverage + operations, growth equity by revenue growth", keywords: ["return driver","growth drives","revenue multiple","expansion","lbo returns","leverage amplifies","multiple expansion","revenue growth","top line"], weight: 2, bullet: "LBO returns: leverage + EBITDA growth + multiple expansion. Growth equity: pure revenue/earnings growth." },
+    ],
+    idealAnswer: "LBO: control buyout, 50-70% debt, mature stable businesses, returns from leverage+operations+multiple expansion. Growth equity: minority stake, no debt, high-growth companies, returns purely from revenue growth and multiple expansion. LBO has lower revenue risk but higher financial risk."
+  },
+  {
+    id: 30, slug: 'carried-interest',
+    title: "What is carried interest and how does the PE waterfall work?",
+    difficulty: "hard", category: "pe", type: "structured",
+    prompt: "Explain what carried interest is, how the distribution waterfall works in a PE fund, and why it's controversial.",
+    answerStructure: [
+      { num: "1", text: "Define carried interest" },
+      { num: "2", text: "Walk through the waterfall: return of capital → preferred return → catch-up → carry" },
+      { num: "3", text: "Typical terms (2 and 20, 8% hurdle)" },
+      { num: "4", text: "Why it's controversial (tax treatment)" },
+    ],
+    rubric: [
+      { item: "Carried interest = GP's share of profits (typically 20%)", keywords: ["carried interest","carry","20%","gp share","profit share","general partner","performance fee","incentive","20 percent","profits interest"], weight: 2, bullet: "Carried interest = GP's share of fund profits, typically 20%. The GP's main performance incentive." },
+      { item: "Waterfall: return of capital first, then preferred return to LPs", keywords: ["return of capital","preferred return","hurdle","8%","lp first","capital back","invested capital","preferred","hurdle rate","minimum return"], weight: 2, bullet: "Waterfall: (1) Return LP capital; (2) Pay 8% preferred return to LPs; (3) GP catch-up; (4) 80/20 split." },
+      { item: "2 and 20 fee structure — 2% management fee, 20% carry", keywords: ["2 and 20","2%","management fee","20% carry","fee structure","annual fee","two and twenty","mgmt fee"], weight: 2, bullet: "Standard terms: 2% annual management fee on committed capital + 20% carried interest." },
+      { item: "Controversial because carry is taxed as capital gains not ordinary income", keywords: ["tax","capital gains","ordinary income","tax rate","loophole","controversial","lower rate","15%","20%","carried interest tax","tax treatment"], weight: 2, bullet: "Controversial: carry is taxed at capital gains rates (~20%) not ordinary income (~37%) — critics call it a loophole." },
+    ],
+    idealAnswer: "Carried interest = GP gets 20% of profits. Waterfall: (1) Return LP capital; (2) 8% preferred return to LPs; (3) GP catch-up to 20%; (4) 80/20 split thereafter. Fee structure = 2% mgmt fee + 20% carry. Controversial because carry is taxed at capital gains rates (~20%) not ordinary income (~37%)."
+  },
+  {
+    id: 31, slug: 'irr-vs-moic',
+    title: "IRR vs MOIC — which matters more in PE?",
+    difficulty: "medium", category: "pe", type: "short",
+    prompt: "Explain the difference between IRR and MOIC, when each is more useful, and how hold period affects both metrics.",
+    answerStructure: [
+      { num: "1", text: "Define both metrics with formulas" },
+      { num: "2", text: "Key difference — IRR is time-sensitive, MOIC is not" },
+      { num: "3", text: "When each matters more" },
+      { num: "4", text: "Give an example showing the tension between them" },
+    ],
+    rubric: [
+      { item: "MOIC = total cash returned / cash invested", keywords: ["moic","multiple","cash returned","cash invested","money on money","total return","2x","3x","multiple of invested capital","gross multiple"], weight: 2, bullet: "MOIC = total proceeds ÷ invested capital. Measures total value created regardless of time." },
+      { item: "IRR = annualized return accounting for time value", keywords: ["irr","annualized","internal rate","time value","annual return","compounded","per year","rate of return","time weighted","annual irr"], weight: 2, bullet: "IRR = annualized return. Accounts for time value of money — when cash flows occur matters." },
+      { item: "IRR is inflated by short hold periods", keywords: ["hold period","shorter","faster","time","quick exit","inflate irr","high irr short","3 years","2 years","time matters","hold period affects"], weight: 2, bullet: "Short hold periods inflate IRR. A 2x in 2 years = 41% IRR vs 2x in 5 years = 15% IRR." },
+      { item: "LPs care about both — MOIC for wealth creation, IRR for fund performance", keywords: ["lp","limited partner","fund","benchmark","dpi","tvpi","wealth","capital","both matter","gp cares","fund irr","return capital"], weight: 2, bullet: "LPs use MOIC for wealth creation, IRR for benchmarking. PE firms often quote both." },
+    ],
+    idealAnswer: "MOIC = total proceeds ÷ invested capital (e.g. 3x). IRR = annualized return (e.g. 25%). Key tension: 3x in 2 years = 73% IRR; 3x in 5 years = 25% IRR — same MOIC, very different IRR. LPs care about both. PE firms optimize IRR via early exits and dividend recaps; LPs want high MOIC for absolute wealth creation."
+  },
+  {
+    id: 32, slug: 'levered-unlevered-beta',
+    title: "What is the difference between levered and unlevered beta?",
+    difficulty: "hard", category: "ib", type: "short",
+    prompt: "Explain what levered and unlevered beta are, how to convert between them, and when you would use each in a DCF.",
+    answerStructure: [
+      { num: "1", text: "Define beta and what it measures" },
+      { num: "2", text: "Unlevered beta = pure business risk" },
+      { num: "3", text: "Levered beta = business risk + financial risk" },
+      { num: "4", text: "Hamada equation and when to use each" },
+    ],
+    rubric: [
+      { item: "Beta measures systematic risk relative to the market", keywords: ["beta","systematic risk","market risk","volatility","relative","correlation","market movement","sensitivity","covariance"], weight: 1, bullet: "Beta = systematic risk of an asset relative to the market. β=1 moves with market." },
+      { item: "Unlevered beta removes the effect of debt/capital structure", keywords: ["unlevered","asset beta","removes debt","capital structure","pure business","operating risk","no leverage","debt free","unlever","strip out debt"], weight: 2, bullet: "Unlevered beta = pure business/operating risk. Strips out financial leverage effect." },
+      { item: "Levered beta increases with more debt (financial risk added)", keywords: ["levered","equity beta","more debt","higher beta","financial risk","leverage increases","capital structure","debt adds risk","relever","increases with debt"], weight: 2, bullet: "Levered beta = unlevered beta × (1 + (1-T) × D/E). More debt = higher equity beta." },
+      { item: "Hamada equation to convert between levered and unlevered", keywords: ["hamada","formula","unlever","relever","1 plus","debt to equity","tax rate","convert","equation","d/e ratio","1-t"], weight: 2, bullet: "Hamada: βL = βU × (1 + (1–T) × D/E). Unlever peer betas → relever at target structure for WACC." },
+      { item: "Process: unlever comps betas, take median, relever at target structure", keywords: ["unlever comps","peer betas","industry beta","median","relever","target structure","process","steps","comparable","apply to target"], weight: 2, bullet: "DCF process: unlever each comp's beta → take median unlevered beta → relever at target D/E → use in CAPM." },
+    ],
+    idealAnswer: "Unlevered beta = pure business risk (no debt). Levered beta = business + financial risk. Hamada: βL = βU × (1 + (1–T) × D/E). DCF process: (1) Find comp betas; (2) Unlever each using their D/E; (3) Take median unlevered beta; (4) Relever at target's capital structure; (5) Plug into CAPM for cost of equity."
+  },
+  {
+    id: 33, slug: 'convertible-notes',
+    title: "What is a convertible note and how does it work?",
+    difficulty: "medium", category: "ib", type: "short",
+    prompt: "Explain what a convertible note is, why companies issue them, and how the conversion mechanics work.",
+    answerStructure: [
+      { num: "1", text: "Define convertible note" },
+      { num: "2", text: "Key terms: coupon, conversion price, maturity" },
+      { num: "3", text: "Why issuers like them (cheaper financing)" },
+      { num: "4", text: "Dilution impact when converted" },
+    ],
+    rubric: [
+      { item: "Convertible note = debt that converts to equity at a set price", keywords: ["convertible","converts to equity","conversion","debt to equity","hybrid","convert","bondholder","equity option","convertible bond","convert at"], weight: 2, bullet: "Convertible note = debt instrument with embedded option to convert into equity at a set price." },
+      { item: "Lower coupon than straight debt due to conversion option", keywords: ["lower coupon","cheaper","conversion premium","option value","lower interest","below market","coupon","interest rate","less expensive","cheaper debt"], weight: 2, bullet: "Issuer pays lower coupon because the conversion option has value to the holder." },
+      { item: "Dilutive to existing shareholders upon conversion", keywords: ["dilutive","dilution","new shares","existing shareholders","share count increases","ownership diluted","convert to shares","ep dilution","more shares outstanding"], weight: 2, bullet: "Conversion creates new shares — dilutive to existing shareholders. Must model dilution impact." },
+      { item: "Companies use converts when stock price is high or they want cheap financing", keywords: ["why issue","high stock price","cheap financing","growth companies","tech","avoid dilution now","defer dilution","strategic","financing tool"], weight: 2, bullet: "Popular when stock is volatile/rising — issuer gets cheap financing, investor gets upside participation." },
+    ],
+    idealAnswer: "Convertible note = debt with option to convert to equity at conversion price. Lower coupon than straight debt because conversion option has value. At conversion: debt disappears, new shares issued — dilutive to existing holders. Companies use converts for cheap financing; investors get downside protection + equity upside."
+  },
+  {
+    id: 34, slug: 'minority-interest',
+    title: "How does minority interest affect valuation and the 3 statements?",
+    difficulty: "hard", category: "ib", type: "short",
+    prompt: "Explain what minority interest (non-controlling interest) is, how it appears on the financial statements, and how it affects EV and equity value.",
+    answerStructure: [
+      { num: "1", text: "Define minority interest / NCI" },
+      { num: "2", text: "Where it appears on each financial statement" },
+      { num: "3", text: "How it affects the EV bridge" },
+      { num: "4", text: "Why it matters in M&A" },
+    ],
+    rubric: [
+      { item: "Minority interest = portion of subsidiary not owned by parent", keywords: ["minority interest","non-controlling interest","nci","subsidiary","not owned","partial ownership","third party","less than 100%","outside shareholders","consolidation"], weight: 2, bullet: "NCI = equity interest in a consolidated subsidiary not owned by the parent company." },
+      { item: "Appears on balance sheet as equity, income statement below net income", keywords: ["balance sheet","equity section","income statement","below net income","consolidated","equity","after net income","separate line","financial statements"], weight: 2, bullet: "BS: NCI sits in equity section. IS: NCI appears below net income as allocation of earnings." },
+      { item: "Must add NCI to equity value to get Enterprise Value", keywords: ["add nci","ev bridge","enterprise value","add to equity","bridge","ev includes","minority interest added","non-controlling","ev to equity","adjust ev"], weight: 3, bullet: "EV = Equity Value + Debt – Cash + NCI. Add NCI because EV represents 100% of consolidated operations." },
+      { item: "In M&A must acquire minority stake separately", keywords: ["acquire minority","buy out","squeeze out","minority buyout","separate transaction","additional cost","purchase nci","full ownership","100%","m&a impact"], weight: 1, bullet: "To own 100% of subsidiary in M&A, acquirer must separately buy out the minority stake." },
+    ],
+    idealAnswer: "NCI = equity in consolidated subsidiary not owned by parent. BS: in equity section. IS: allocated below net income. EV bridge: EV = Equity Value + Debt – Cash + NCI. Why: EV reflects 100% of operations, so NCI must be added. In M&A, buying out NCI is a separate cost on top of purchasing the parent."
+  },
+  {
+    id: 35, slug: 'operating-vs-financial-leverage',
+    title: "What is the difference between operating and financial leverage?",
+    difficulty: "medium", category: "ib", type: "short",
+    prompt: "Explain operating leverage and financial leverage, how each affects risk and returns, and give an example of a high operating leverage business.",
+    answerStructure: [
+      { num: "1", text: "Define operating leverage — fixed vs variable costs" },
+      { num: "2", text: "Define financial leverage — debt in capital structure" },
+      { num: "3", text: "How each amplifies returns and risk" },
+      { num: "4", text: "Give an example of each type" },
+    ],
+    rubric: [
+      { item: "Operating leverage = high fixed costs relative to variable costs", keywords: ["operating leverage","fixed cost","variable cost","fixed vs variable","high fixed","cost structure","scalable","incremental margin","contribution margin","breakeven"], weight: 2, bullet: "Operating leverage = proportion of fixed vs variable costs. High fixed costs = high operating leverage." },
+      { item: "Financial leverage = use of debt in capital structure", keywords: ["financial leverage","debt","capital structure","borrowed","interest","equity","debt financing","levered","borrowed capital","debt to equity"], weight: 2, bullet: "Financial leverage = debt in capital structure. Amplifies equity returns but adds financial risk." },
+      { item: "Both amplify upside and downside", keywords: ["amplify","magnify","both ways","upside downside","double edged","risk return","amplifies both","good times bad times","volatile earnings"], weight: 2, bullet: "Both amplify returns in good times AND losses in bad times — double-edged sword." },
+      { item: "Example: airlines, software, semiconductors for operating leverage", keywords: ["airline","software","semiconductor","saas","fixed cost example","high fixed","movies","streaming","example","manufacturing","pharmaceutical"], weight: 2, bullet: "High operating leverage: airlines (mostly fixed costs), SaaS (near-zero marginal cost per user)." },
+    ],
+    idealAnswer: "Operating leverage: high fixed costs mean small revenue changes cause large profit swings (e.g. airlines, SaaS). Financial leverage: debt amplifies equity returns — same EBITDA gain = bigger equity gain when levered. Both amplify upside AND downside. Companies with both are high risk/high reward."
+  },
+  {
+    id: 36, slug: 'rising-rates-valuation',
+    title: "How do rising interest rates affect company valuations?",
+    difficulty: "medium", category: "ib", type: "short",
+    prompt: "Walk through the mechanisms by which rising interest rates affect company valuations across DCF, multiples, and M&A activity.",
+    answerStructure: [
+      { num: "1", text: "DCF impact — higher WACC lowers present value" },
+      { num: "2", text: "Multiple compression — why multiples fall" },
+      { num: "3", text: "M&A impact — higher debt costs reduce LBO capacity" },
+      { num: "4", text: "Which companies are most affected" },
+    ],
+    rubric: [
+      { item: "Higher rates increase WACC and reduce DCF values", keywords: ["wacc","discount rate","higher wacc","present value falls","dcf lower","terminal value","cost of capital","risk free rate","higher discount"], weight: 2, bullet: "Higher rates → higher WACC → lower PV of future cash flows → lower DCF value." },
+      { item: "Multiple compression — investors pay less for future earnings", keywords: ["multiple compression","multiples fall","p/e falls","ev/ebitda lower","compress","re-rate","lower multiple","valuation multiple","pays less","earnings less valuable"], weight: 2, bullet: "Higher rates = higher opportunity cost → investors pay lower multiples for same earnings." },
+      { item: "LBO debt costs rise reducing returns and deal activity", keywords: ["lbo","debt cost","higher interest","financing cost","deal activity","fewer deals","harder to finance","leverage","spread","deal volume"], weight: 2, bullet: "Higher debt costs → lower LBO returns → fewer deals get done → M&A activity slows." },
+      { item: "Long-duration assets (growth stocks, VC) hurt most", keywords: ["growth stock","long duration","far off","terminal value","tech","unprofitable","distant cash flows","growth company","most hurt","vc","high multiple"], weight: 2, bullet: "Long-duration assets hurt most — growth companies with cash flows far in the future see biggest valuation drops." },
+    ],
+    idealAnswer: "Rising rates: (1) Higher WACC → lower DCF values; (2) Multiple compression — investors pay less for future earnings; (3) Higher debt costs → LBO returns fall → M&A slows; (4) Growth stocks/long-duration assets hurt most. 2022 is the perfect case study — rates up 500bps, tech multiples fell 60-80%."
+  },
+  {
+    id: 37, slug: 'leveraged-loan-vs-high-yield',
+    title: "What is the difference between a leveraged loan and a high yield bond?",
+    difficulty: "hard", category: "ib", type: "short",
+    prompt: "Compare leveraged loans and high yield bonds — their structure, pricing, covenants, and when each is used in an LBO.",
+    answerStructure: [
+      { num: "1", text: "Define both instruments" },
+      { num: "2", text: "Key differences: floating vs fixed, secured vs unsecured" },
+      { num: "3", text: "Covenant differences" },
+      { num: "4", text: "Which is used where in the LBO capital structure" },
+    ],
+    rubric: [
+      { item: "Leveraged loans are floating rate, high yield bonds are fixed rate", keywords: ["floating rate","fixed rate","sofr","libor","variable","fixed coupon","floating","rate type","interest rate","sofr plus"], weight: 2, bullet: "Leveraged loans: floating rate (SOFR + spread). High yield bonds: fixed coupon — different interest rate risk." },
+      { item: "Leveraged loans are secured, high yield bonds are typically unsecured", keywords: ["secured","unsecured","collateral","first lien","senior secured","asset backed","no collateral","subordinated","security","pledge"], weight: 2, bullet: "Loans: secured by company assets (first lien). HY bonds: typically unsecured — lower in capital structure." },
+      { item: "Loans have maintenance covenants, bonds have incurrence covenants", keywords: ["maintenance covenant","incurrence covenant","tested quarterly","only tested","covenant","compliance","financial test","quarterly","breach","looser"], weight: 2, bullet: "Loans: maintenance covenants tested quarterly. Bonds: incurrence covenants (only tested on new actions) — bond-friendly." },
+      { item: "Loans sit above bonds in LBO capital structure", keywords: ["senior","more senior","above bonds","first priority","paid first","priority","capital structure position","seniority","above high yield","senior to bonds"], weight: 2, bullet: "In LBO stack: Term Loans (senior secured) → HY Bonds (unsecured) → Mezz/Equity. Loans are safer." },
+    ],
+    idealAnswer: "Leveraged loans: floating rate, secured, maintenance covenants, bank market. HY bonds: fixed rate, unsecured, incurrence covenants, public market. In LBO: loans sit senior (Term Loan A/B), bonds sit junior (unsecured notes). Loans cheaper but have stricter covenants. Bonds give issuer more flexibility."
+  },
+  {
+    id: 38, slug: 'dcf-sensitivity',
+    title: "How do you build a DCF sensitivity analysis?",
+    difficulty: "medium", category: "ib", type: "structured",
+    prompt: "Explain how you would build a sensitivity analysis around a DCF, what variables you would stress test, and how to interpret the results.",
+    answerStructure: [
+      { num: "1", text: "Identify the most sensitive inputs (WACC and terminal growth)" },
+      { num: "2", text: "Build a 2-variable data table (WACC vs terminal growth)" },
+      { num: "3", text: "Interpret the output range" },
+      { num: "4", text: "Explain what it tells you about the valuation" },
+    ],
+    rubric: [
+      { item: "WACC and terminal growth rate are most sensitive inputs", keywords: ["wacc","terminal growth","most sensitive","key inputs","sensitivity","stress test","most impact","drives value","critical assumption","varies most"], weight: 2, bullet: "WACC and terminal growth rate drive 80%+ of DCF value variance — always sensitize these." },
+      { item: "Two-way data table showing EV across WACC/growth combinations", keywords: ["data table","two way","matrix","range","grid","wacc on one axis","growth on other","combinations","sensitivity table","output range"], weight: 2, bullet: "Build 2-way table: WACC on one axis, terminal growth on other → implied EV at each combination." },
+      { item: "Wide range signals high uncertainty in the valuation", keywords: ["wide range","uncertainty","wide spread","variation","not precise","imprecise","range of outcomes","valuation range","multiple scenarios","dispersion"], weight: 2, bullet: "Wide range = high uncertainty. DCF is an art — the range matters as much as the point estimate." },
+      { item: "Use sensitivity to triangulate with comps and identify key assumptions to validate", keywords: ["triangulate","cross check","comps","validate","assumptions","check against","market","anchored","reality check","benchmark"], weight: 2, bullet: "Cross-check DCF range against trading comps — if DCF implies 20x and comps are 8x, revisit assumptions." },
+    ],
+    idealAnswer: "Sensitivity analysis: (1) Identify key inputs — WACC and terminal growth rate; (2) Build 2-way data table; (3) Read the range — e.g. EV of $700M–$1.1B; (4) Wide range = high sensitivity = less reliable point estimate. Always cross-check against comps. Present the range to the MD, not a single number."
+  },
+  {
+    id: 39, slug: 'pre-revenue-startup-valuation',
+    title: "How would you value a pre-revenue startup?",
+    difficulty: "hard", category: "ib", type: "short",
+    prompt: "A VC asks you to value a pre-revenue SaaS startup. Walk through the approaches you would use and their limitations.",
+    answerStructure: [
+      { num: "1", text: "Acknowledge traditional methods don't work well" },
+      { num: "2", text: "Comparable transactions / recent funding rounds" },
+      { num: "3", text: "Forward revenue multiples (EV/NTM Revenue)" },
+      { num: "4", text: "VC method — work backwards from exit" },
+    ],
+    rubric: [
+      { item: "Traditional DCF and EBITDA multiples don't work for pre-revenue", keywords: ["no revenue","pre-revenue","can't use dcf","no ebitda","traditional methods","no cash flow","negative ebitda","doesn't apply","limited use","not applicable"], weight: 1, bullet: "Traditional DCF and EBITDA multiples don't apply — no earnings or cash flows to discount." },
+      { item: "Comparable transactions and funding rounds as benchmarks", keywords: ["comparable transaction","funding round","recent raise","series a","series b","precedent","similar companies","benchmark","comp","recent deal","raised at"], weight: 2, bullet: "Look at recent funding rounds for comparable companies — what did similar startups raise at?" },
+      { item: "Forward revenue multiples (EV/NTM Revenue)", keywords: ["forward revenue","ev/revenue","revenue multiple","ntm revenue","next twelve months","top line","revenue based","ev to revenue","sales multiple","price to sales"], weight: 2, bullet: "Use EV/NTM Revenue — high-growth SaaS trades at 5–15x forward revenue depending on growth rate." },
+      { item: "VC method: project exit value, discount back at target IRR", keywords: ["vc method","venture capital","exit value","work backwards","target irr","discount back","terminal value","exit multiple","ownership","post money"], weight: 3, bullet: "VC method: project exit value in 5–7 years → discount back at target IRR (30–40%) → implies today's valuation." },
+    ],
+    idealAnswer: "Pre-revenue startup: (1) DCF/EBITDA useless — no earnings; (2) Comp transactions — what did similar startups raise at?; (3) EV/NTM Revenue — SaaS comps at 5–15x; (4) VC method — project $500M exit in 5 years at 10x revenue, discount at 40% IRR → implies $130M post-money today. Art not science."
+  },
+  {
+    id: 40, slug: 'why-investment-banking',
+    title: "Why investment banking?",
+    difficulty: "easy", category: "ib", type: "short",
+    prompt: "This is one of the most common IB interview questions. Walk through how you would answer 'Why investment banking?' in a way that is compelling and specific.",
+    answerStructure: [
+      { num: "1", text: "Start with a genuine connection to finance/markets" },
+      { num: "2", text: "Explain the specific appeal of IB (deals, clients, breadth)" },
+      { num: "3", text: "Connect to your background/experience" },
+      { num: "4", text: "Show awareness of what the job actually involves" },
+    ],
+    rubric: [
+      { item: "Genuine interest in finance, markets, or transactions", keywords: ["finance","markets","transactions","deals","interest","passion","fascinated","drawn to","love","excited by","capital markets","corporate finance"], weight: 2, bullet: "Show genuine interest — not just prestige. Reference a deal, market event, or experience that sparked it." },
+      { item: "Specific appeal of IB — breadth, client advisory, deal exposure", keywords: ["breadth","exposure","advisory","client","multiple industries","strategic","m&a","capital raising","deal","variety","learn quickly","front line"], weight: 2, bullet: "Be specific: IB's breadth of industry exposure, direct client advisory work, deal execution." },
+      { item: "Personal experience connecting to IB", keywords: ["internship","experience","club","case competition","course","professor","project","analyzed","worked on","research","school","university","past"], weight: 2, bullet: "Connect to your own background — a specific experience that made you pursue IB over other finance paths." },
+      { item: "Awareness of what IB actually involves (the hard parts too)", keywords: ["hours","demanding","fast paced","analytical","attention to detail","pressure","high stakes","execution","modeling","pitch","process","realistic"], weight: 2, bullet: "Show you know what the job is — long hours, execution-heavy, client-facing. Realism = credibility." },
+    ],
+    idealAnswer: "Strong answer: (1) Specific trigger — 'I analyzed the Microsoft/Activision deal and became obsessed with the strategic rationale'; (2) Why IB specifically — breadth, advisory role, deal exposure across industries; (3) Personal experience — relevant internship, finance club, coursework; (4) Realistic — acknowledge the demanding nature and show you've done your homework on the role."
+  },
+  {
+    id: 41, slug: 'recent-ma-deal',
+    title: "Tell me about a recent M&A deal you've been following",
+    difficulty: "medium", category: "ib", type: "short",
+    prompt: "Walk through a recent M&A transaction you find interesting. Cover the strategic rationale, valuation, and your view on whether it was a good deal.",
+    answerStructure: [
+      { num: "1", text: "Name the deal, buyer, target, and deal size" },
+      { num: "2", text: "Explain the strategic rationale — why did the buyer want this?" },
+      { num: "3", text: "Touch on valuation — was the price reasonable?" },
+      { num: "4", text: "Give your view — was this a good deal? Why or why not?" },
+    ],
+    rubric: [
+      { item: "Names a specific real deal with buyer, target, and price", keywords: ["acquirer","target","billion","deal","acquisition","merger","bought","acquired","price","deal size","transaction value","purchase"], weight: 2, bullet: "Name a specific deal — buyer, target, price. Vague answers signal you haven't been following the markets." },
+      { item: "Explains strategic rationale clearly", keywords: ["strategic rationale","why","reason","synergies","market share","expand","diversify","technology","capabilities","vertical integration","cross sell","geographic","strategic fit"], weight: 3, bullet: "Nail the strategic rationale — why did the buyer want this specific target at this time?" },
+      { item: "References valuation multiple or premium paid", keywords: ["multiple","premium","ev/ebitda","price to earnings","overpaid","fair value","expensive","cheap","valuation","x times","acquisition multiple","premium to market"], weight: 2, bullet: "Reference the valuation — 'they paid 12x EBITDA, a 30% premium to trading price.' Show you can evaluate price." },
+      { item: "Has a clear opinion on whether it was a good deal", keywords: ["think","believe","view","opinion","good deal","bad deal","overpriced","makes sense","strategic","risky","creates value","destroys value","right price","my view"], weight: 2, bullet: "Have a clear view — interviewers want to know you can form and defend an opinion." },
+    ],
+    idealAnswer: "Strong answer: 'I've been following [specific deal]. [Buyer] acquired [target] for $Xbn at Yx EBITDA, a Z% premium. The rationale was [specific strategic reason]. I think it [was/wasn't] a good deal because [specific argument — synergies, overpaid, competitive threat etc.]. The main risk is [specific risk].'"
+  },
+  {
+    id: 42, slug: 'pitch-a-stock',
+    title: "Pitch me a stock",
+    difficulty: "hard", category: "ib", type: "structured",
+    prompt: "Walk through how you would structure a compelling stock pitch in an interview setting. What elements must it include and how do you make it stand out?",
+    answerStructure: [
+      { num: "1", text: "State your recommendation and target price upfront" },
+      { num: "2", text: "Give 2-3 specific investment thesis points" },
+      { num: "3", text: "Address valuation — why is it cheap or fairly valued?" },
+      { num: "4", text: "State the key risks and why you're comfortable with them" },
+    ],
+    rubric: [
+      { item: "Clear buy/sell recommendation with target price", keywords: ["buy","sell","short","long","recommend","target price","upside","downside","conviction","recommendation","rating","thesis"], weight: 2, bullet: "Lead with conviction: 'I recommend buying X with a 12-month target of $Y, implying Z% upside.'" },
+      { item: "2-3 specific thesis drivers (not generic)", keywords: ["thesis","driver","catalyst","reason","specific","why","earnings growth","market share","new product","margin","expansion","undervalued","mispriced","catalyst"], weight: 3, bullet: "Thesis must be specific — not 'great management' but 'new product cycle drives 20% revenue CAGR through 2026.'" },
+      { item: "Valuation support — multiple or DCF based", keywords: ["valuation","multiple","cheap","discount","ev/ebitda","p/e","dcf","intrinsic value","trading at","below peers","undervalued","historically low","relative"], weight: 2, bullet: "Anchor to valuation — 'trades at 8x vs 12x peer average, unwarranted given superior growth.'" },
+      { item: "Identifies key risks and addresses them", keywords: ["risk","downside","bear case","what could go wrong","concern","threat","competition","regulatory","execution","macro","risk reward","mitigate"], weight: 2, bullet: "Always address risks — it shows intellectual honesty. 'Key risk is X but I'm comfortable because Y.'" },
+    ],
+    idealAnswer: "Structure: (1) 'Buy [Company] with 12-month target of $X (Y% upside)'; (2) 3 specific thesis points with data; (3) Valuation anchor — 'trades at Z discount to peers for no fundamental reason'; (4) Key risks acknowledged. Avoid generic statements. Best pitches have a non-consensus angle — something the market is missing."
+  },
+  {
+    id: 43, slug: 'what-makes-good-lbo',
+    title: "What makes a good LBO candidate?",
+    difficulty: "medium", category: "pe", type: "short",
+    prompt: "Walk through the characteristics that make a company an ideal LBO target. Give specific examples.",
+    answerStructure: [
+      { num: "1", text: "Strong, predictable free cash flow" },
+      { num: "2", text: "Defensible market position" },
+      { num: "3", text: "Low capex requirements" },
+      { num: "4", text: "Operational improvement opportunity" },
+    ],
+    rubric: [
+      { item: "Strong predictable FCF to service debt", keywords: ["free cash flow","predictable","stable","recurring","cash generation","debt service","service debt","consistent","reliable","cash flow visibility","contracted"], weight: 3, bullet: "Most important: strong, predictable FCF — company must generate enough cash to service the debt load." },
+      { item: "Defensible market position / competitive moat", keywords: ["market position","moat","competitive","defensible","market share","brand","barriers to entry","pricing power","switching costs","dominant","leading"], weight: 2, bullet: "Defensible position — protects revenue base. Commodity businesses are risky LBO targets." },
+      { item: "Low ongoing capex requirements", keywords: ["low capex","asset light","minimal capex","not capital intensive","maintenance capex","low reinvestment","asset light","little capex","capex requirements"], weight: 2, bullet: "Low capex = more FCF available for debt paydown. Asset-heavy businesses are tough LBO targets." },
+      { item: "Operational improvement opportunity to grow EBITDA", keywords: ["operational improvement","ebitda growth","cost reduction","margin expansion","new management","efficiency","value creation","improve","optimize","operational upside"], weight: 2, bullet: "PE needs an angle to grow EBITDA — cost cuts, pricing, new markets, or buy-and-build." },
+    ],
+    idealAnswer: "Good LBO target: (1) Strong predictable FCF — must service 4–6x debt; (2) Defensible market position — protects revenue; (3) Low capex — more FCF for debt paydown; (4) Operational upside — PE needs an angle to grow EBITDA; (5) Reasonable entry price; (6) Clear exit path. Classic examples: enterprise software, healthcare services, consumer staples."
+  },
+  {
+    id: 44, slug: 'pe-fund-structure',
+    title: "How is a private equity fund structured?",
+    difficulty: "medium", category: "pe", type: "short",
+    prompt: "Explain the structure of a private equity fund — the key parties, economics, and how capital is raised and deployed.",
+    answerStructure: [
+      { num: "1", text: "GP vs LP — who they are and their roles" },
+      { num: "2", text: "Fund economics — management fee and carry" },
+      { num: "3", text: "Capital deployment — investment period and harvesting" },
+      { num: "4", text: "Fund life cycle" },
+    ],
+    rubric: [
+      { item: "GP manages the fund, LPs provide the capital", keywords: ["general partner","limited partner","gp","lp","manages","capital","investors","pension fund","endowment","sovereign wealth","institutional","family office"], weight: 2, bullet: "GP = fund manager (KKR, Blackstone). LPs = capital providers (pensions, endowments, family offices)." },
+      { item: "2 and 20 economics — management fee plus carried interest", keywords: ["2 and 20","management fee","carried interest","carry","2%","20%","economics","fee","annual fee","performance"], weight: 2, bullet: "Economics: 2% annual management fee on committed capital + 20% carry on profits above hurdle." },
+      { item: "Investment period typically 5 years, total fund life 10 years", keywords: ["investment period","5 years","10 years","fund life","deploy","harvesting","vintage","commitment period","hold period","lifecycle"], weight: 2, bullet: "Investment period = first 5 years (deploy capital). Hold + harvest = next 5 years. Total life = ~10 years." },
+      { item: "Limited liability — LPs can only lose their investment", keywords: ["limited liability","limited partner","liability","lose investment","protected","not liable","limited exposure","downside capped","lp liability"], weight: 2, bullet: "LP = limited liability — can only lose committed capital. GP has unlimited liability (in theory)." },
+    ],
+    idealAnswer: "Structure: GP (fund manager) raises capital from LPs (pensions, endowments, family offices). Fund life = 10 years: 5-year investment period + 5-year harvest. Economics: 2% mgmt fee on committed capital + 20% carry above 8% hurdle. LPs have limited liability. GP commits 1–3% of fund (skin in the game)."
+  },
+  {
+    id: 45, slug: 'ipo-process',
+    title: "Walk me through the IPO process",
+    difficulty: "medium", category: "ib", type: "structured",
+    prompt: "A company has hired your bank to lead its IPO. Walk through the key steps in the process from mandate to listing.",
+    answerStructure: [
+      { num: "1", text: "Mandate and preparation (6-12 months before)" },
+      { num: "2", text: "S-1 filing and SEC review" },
+      { num: "3", text: "Roadshow and book building" },
+      { num: "4", text: "Pricing and listing" },
+    ],
+    rubric: [
+      { item: "Select underwriters and prepare S-1 registration statement", keywords: ["underwriter","s-1","registration","sec filing","prospectus","lead banker","bookrunner","file","registration statement","prepare"], weight: 2, bullet: "Step 1: Select underwriters, prepare S-1 registration statement with full financial disclosure." },
+      { item: "SEC review and comment process", keywords: ["sec","review","comment letter","respond","deficiency","quiet period","sec review","registration effective","comments","regulator"], weight: 2, bullet: "SEC reviews S-1, issues comment letters — back and forth process, typically 2–3 rounds." },
+      { item: "Roadshow — management presents to institutional investors", keywords: ["roadshow","investors","institutional","present","management","pitch","two weeks","marketing","investor meeting","book build","orders"], weight: 2, bullet: "Roadshow: 2-week sprint where management pitches to institutional investors across major cities." },
+      { item: "Book building — determine demand and set price range", keywords: ["book building","demand","price range","order book","oversubscribed","allocation","set price","pricing","final price","institutional orders"], weight: 2, bullet: "Book building: collect investor orders, assess demand, set final price. Oversubscribed = price at top." },
+      { item: "Pricing night and first day trading", keywords: ["pricing","listing","first day","opening trade","exchange","nyse","nasdaq","trading","debut","ipo price","pop","first trade"], weight: 1, bullet: "Price set night before listing. 15-20% first-day pop is considered successful." },
+    ],
+    idealAnswer: "IPO process: (1) Select underwriters, prepare S-1 (6–12 months); (2) File S-1 with SEC, respond to comment letters; (3) Roadshow — 2 weeks, management pitches to institutional investors; (4) Book building — collect orders, set price range; (5) Price night before, list on exchange. Total timeline: 12–18 months from kick-off to listing."
+  },
+  {
+    id: 46, slug: 'yield-curve',
+    title: "What is the yield curve and what does it tell us?",
+    difficulty: "medium", category: "ib", type: "short",
+    prompt: "Explain what the yield curve is, what an inverted yield curve means, and why it matters for the economy and financial markets.",
+    answerStructure: [
+      { num: "1", text: "Define the yield curve" },
+      { num: "2", text: "Normal vs inverted yield curve" },
+      { num: "3", text: "Why inversion predicts recession" },
+      { num: "4", text: "Impact on banks, M&A, and LBOs" },
+    ],
+    rubric: [
+      { item: "Yield curve plots interest rates across different maturities", keywords: ["yield curve","maturities","short term","long term","treasury","2 year","10 year","interest rates","plot","rates across","term structure"], weight: 2, bullet: "Yield curve: plots Treasury yields across maturities (3m, 2yr, 10yr, 30yr)." },
+      { item: "Normal curve slopes upward — long rates higher than short rates", keywords: ["normal","upward sloping","long rates higher","positive slope","short term lower","long term higher","steep","upward","normal curve"], weight: 1, bullet: "Normal: upward sloping — long-term rates higher to compensate for time risk." },
+      { item: "Inverted curve means short rates exceed long rates — recession signal", keywords: ["inverted","inversion","short higher than long","2s10s","negative spread","recession signal","predictor","flattening","2 year above 10 year","inverted yield"], weight: 3, bullet: "Inverted: short rates > long rates. Has preceded every US recession — markets expect rates to fall (i.e. economy to weaken)." },
+      { item: "Inversion hurts bank profitability and dampens M&A/LBO activity", keywords: ["banks","net interest margin","nim","borrow short lend long","profitability","m&a","deal activity","financing cost","lbo","spread compression"], weight: 2, bullet: "Inverted curve: hurts banks (borrow short, lend long → margins squeezed), raises financing costs, slows M&A." },
+    ],
+    idealAnswer: "Yield curve plots Treasury rates across maturities. Normal = upward sloping. Inverted = short rates > long rates (2yr > 10yr) — reliable recession predictor. Why: market expects Fed to cut rates as economy weakens. Impact: banks' NIMs compressed, LBO financing costs rise, deal activity slows. 2022-2023 inversion is the most recent example."
+  },
+  {
+    id: 47, slug: 'merger-model-walkthrough',
+    title: "Walk me through how you would build a merger model",
+    difficulty: "hard", category: "ib", type: "structured",
+    prompt: "Explain the key steps in building a merger model from scratch, what the key outputs are, and what assumptions drive the analysis.",
+    answerStructure: [
+      { num: "1", text: "Set up standalone financials for acquirer and target" },
+      { num: "2", text: "Model the transaction — sources and uses, purchase price" },
+      { num: "3", text: "Combine financials and model synergies" },
+      { num: "4", text: "Calculate accretion/dilution to EPS" },
+    ],
+    rubric: [
+      { item: "Start with standalone financials for both companies", keywords: ["standalone","acquirer","target","separate","income statement","project","individual","before combination","each company","financials"], weight: 2, bullet: "Step 1: Project standalone IS for acquirer and target — revenue, EBITDA, net income, EPS." },
+      { item: "Sources and uses — how is the deal financed", keywords: ["sources and uses","financing","cash","stock","debt","how financed","deal consideration","mix","equity","new debt","cash on hand"], weight: 2, bullet: "Sources and uses: where does the money come from (cash, stock, debt) and where does it go (purchase price, fees)." },
+      { item: "Model transaction adjustments — goodwill, intangibles, financing costs", keywords: ["goodwill","intangibles","purchase price allocation","ppa","financing costs","interest expense","amortization","transaction adj","pro forma","adjustments"], weight: 2, bullet: "Transaction adjustments: create goodwill/intangibles, add new interest expense, remove target standalone taxes." },
+      { item: "Calculate pro forma EPS and compare to standalone", keywords: ["pro forma","eps","accretive","dilutive","compare","standalone eps","combined eps","per share","accretion dilution","pro forma net income"], weight: 2, bullet: "Output: pro forma EPS vs standalone EPS → accretive or dilutive? By how much?" },
+    ],
+    idealAnswer: "Merger model: (1) Project standalone financials for both; (2) Sources & uses — cash/stock/debt mix; (3) PPA — create goodwill, step up assets, new D&A; (4) Add interest expense on new debt; (5) Combine income statements + synergies; (6) Calculate pro forma net income / diluted shares = pro forma EPS; (7) Compare to standalone EPS → accretion/dilution."
+  },
+  {
+    id: 48, slug: 'management-rollover',
+    title: "What is management rollover in an LBO?",
+    difficulty: "hard", category: "pe", type: "short",
+    prompt: "Explain what management rollover is in an LBO context, why PE firms require it, and how it affects deal economics.",
+    answerStructure: [
+      { num: "1", text: "Define management rollover" },
+      { num: "2", text: "Why PE firms want management to roll equity" },
+      { num: "3", text: "Typical rollover percentage" },
+      { num: "4", text: "Impact on deal economics and alignment" },
+    ],
+    rubric: [
+      { item: "Management rolls existing equity into new deal instead of cashing out", keywords: ["rollover","roll equity","reinvest","keep equity","don't cash out","retain stake","contribute equity","roll into","existing equity","continue owning"], weight: 2, bullet: "Rollover = management keeps a portion of their equity in the new deal rather than cashing out at close." },
+      { item: "Aligns management incentives with PE sponsor", keywords: ["alignment","incentive","skin in the game","aligned","motivated","same interests","performance","upside","shared","committed","incentivized"], weight: 3, bullet: "Key benefit: aligns management with sponsor — both win on exit, both lose if deal underperforms." },
+      { item: "Typically 5-20% of total equity in the new deal", keywords: ["5%","10%","15%","20%","typical","percentage","portion","how much","size","equity stake","management stake"], weight: 1, bullet: "Typical rollover: management owns 5–20% of the new equity, depending on deal size and management quality." },
+      { item: "Reduces equity check for PE sponsor", keywords: ["reduces equity","less cash","smaller check","equity check","sponsor contribution","less from sponsor","offset","fund less","contribute less"], weight: 2, bullet: "Also reduces PE equity check — management's rollover offsets some of the sponsor's required investment." },
+    ],
+    idealAnswer: "Management rollover: management reinvests their existing equity into the new LBO structure instead of cashing out. Typical: 5–20% of equity. Benefits: (1) Aligns incentives — management and PE win/lose together; (2) Reduces sponsor equity check; (3) Signals management confidence in the business. PE firms view meaningful rollover as a positive signal."
+  },
+  {
+    id: 49, slug: 'dcf-terminal-value',
+    title: "What are the two methods for calculating terminal value in a DCF?",
+    difficulty: "medium", category: "ib", type: "short",
+    prompt: "Explain the Gordon Growth Model and Exit Multiple Method for terminal value, when to use each, and their key limitations.",
+    answerStructure: [
+      { num: "1", text: "Gordon Growth Model — formula and assumptions" },
+      { num: "2", text: "Exit Multiple Method — formula and assumptions" },
+      { num: "3", text: "When to use each" },
+      { num: "4", text: "Sanity check — compare both to make sure they're consistent" },
+    ],
+    rubric: [
+      { item: "Gordon Growth Model = FCF × (1+g) / (WACC – g)", keywords: ["gordon growth","perpetuity","fcf times","wacc minus g","1 plus g","terminal growth rate","perpetuity growth","in perpetuity","gordon","growth rate formula"], weight: 2, bullet: "Gordon Growth: TV = FCF × (1+g) / (WACC–g). Assumes company grows at 'g' forever." },
+      { item: "Exit Multiple Method = EBITDA × multiple at exit", keywords: ["exit multiple","ebitda times","terminal multiple","ev/ebitda","exit at","trading multiple","multiple method","ebitda multiple","exit value"], weight: 2, bullet: "Exit Multiple: TV = Terminal Year EBITDA × assumed exit EV/EBITDA. Anchored to market multiples." },
+      { item: "Gordon Growth better for stable mature businesses, exit multiple for M&A context", keywords: ["when to use","mature","stable","m&a","acquisition","context","gordon for stable","exit for deals","depends","appropriate"], weight: 2, bullet: "Gordon Growth: better for stable businesses. Exit Multiple: better when benchmarking to M&A transactions." },
+      { item: "Always sanity check both methods against each other", keywords: ["sanity check","cross check","compare","consistent","both methods","triangulate","make sure","reasonable","same ballpark","validate"], weight: 2, bullet: "Always calculate both and cross-check — if they diverge significantly, revisit your assumptions." },
+    ],
+    idealAnswer: "Two methods: (1) Gordon Growth: TV = FCF×(1+g)/(WACC–g) — assumes perpetual growth, sensitive to 'g' assumption; (2) Exit Multiple: TV = Terminal EBITDA × EV/EBITDA multiple — anchored to market. Always calculate both and cross-check. Gordon Growth good for stable mature businesses; exit multiple better for transaction context."
+  },
+  {
+    id: 50, slug: 'markets-right-now',
+    title: "What is happening in the markets right now?",
+    difficulty: "medium", category: "ib", type: "short",
+    prompt: "This is a common interview question to test market awareness. Walk through how you would structure a compelling answer about current market conditions.",
+    answerStructure: [
+      { num: "1", text: "State the macro backdrop (rates, inflation, growth)" },
+      { num: "2", text: "Comment on equity markets and valuations" },
+      { num: "3", text: "Mention M&A or deal market conditions" },
+      { num: "4", text: "Have a view — what are you watching closely?" },
+    ],
+    rubric: [
+      { item: "Comments on interest rate environment", keywords: ["interest rates","fed","federal reserve","rate cuts","rate hikes","monetary policy","inflation","tightening","easing","rate environment","central bank","basis points"], weight: 2, bullet: "Always start with rates — the Fed's path drives almost everything else in markets right now." },
+      { item: "Comments on equity market conditions and valuations", keywords: ["equity market","stock market","valuation","multiple","s&p","nasdaq","bull market","bear market","rally","correction","expensive","cheap","p/e"], weight: 2, bullet: "Reference equity markets — are valuations stretched? What sectors are leading or lagging?" },
+      { item: "References M&A or credit market conditions", keywords: ["m&a","deal market","credit","spreads","deal volume","activity","financing","ipo market","leveraged finance","high yield","deal flow","strategic"], weight: 2, bullet: "M&A awareness is crucial for IB — comment on deal volumes, financing conditions, strategic themes." },
+      { item: "Has a specific view or sector thesis", keywords: ["think","believe","watching","view","sector","opportunity","risk","specific","opinion","focused on","interesting","thesis","following"], weight: 2, bullet: "Have a specific view — one sector, trend, or macro theme you're watching. Shows genuine engagement." },
+    ],
+    idealAnswer: "Structure: (1) Macro — 'The Fed is [cutting/holding] rates as inflation [trends/concerns]'; (2) Equities — 'Markets are at [X multiple] — [stretched/reasonable] vs history'; (3) M&A — 'Deal activity is [picking up/slow] as financing costs [ease/remain elevated]'; (4) Your view — 'I'm particularly watching [sector/trend] because [specific reason].' Read WSJ, FT, and Dealbook daily before interviews."
+  },
 ]
 
 type Question = typeof QUESTIONS[0]
