@@ -5,6 +5,30 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
 
+const BLOCKLIST = [
+  // Sexual
+  'fuck', 'shit', 'ass', 'bitch', 'cunt', 'dick', 'cock', 'pussy',
+  'whore', 'slut', 'twat', 'wanker', 'asshole', 'prick', 'tits',
+  'boob', 'penis', 'vagina', 'anus', 'butthole', 'dildo', 'porn',
+  'sex', 'nude', 'naked', 'horny', 'cum', 'jizz', 'blowjob', 'handjob',
+  // Slurs - racial
+  'nigger', 'nigga', 'chink', 'spic', 'kike', 'gook', 'wetback',
+  'cracker', 'honky', 'beaner', 'coon', 'towelhead', 'raghead',
+  'zipperhead', 'redskin', 'injun',
+  // Slurs - other
+  'faggot', 'fag', 'dyke', 'tranny', 'retard', 'retarded', 'spastic',
+  'cripple', 'midget', 'mongoloid',
+  // Insults
+  'stupid', 'idiot', 'moron', 'imbecile', 'dumbass', 'loser',
+  'bastard', 'jackass', 'dipshit', 'douchebag', 'douche', 'scumbag',
+  'dumbfuck', 'fuckface', 'shithead', 'asshat', 'numbnuts', 'dimwit',
+  'nitwit', 'halfwit', 'meathead', 'bonehead', 'blockhead', 'airhead',
+  // Hate / extremism
+  'nazi', 'hitler', 'kkk', 'isis', 'jihad', 'terrorist',
+  // Misc
+  'damn', 'crap', 'piss', 'hell', 'pedo', 'pedophile', 'rapist', 'rape'
+]
+
 export default function LoginPage() {
   const router = useRouter()
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
@@ -22,6 +46,15 @@ export default function LoginPage() {
     setLoading(true)
 
     if (mode === 'signup') {
+      // Check blocklist
+      const usernameLower = username.toLowerCase()
+      const hasBadWord = BLOCKLIST.some(word => usernameLower.includes(word))
+      if (hasBadWord) {
+        setError("That username contains a word that isn't allowed. Please choose another.")
+        setLoading(false)
+        return
+      }
+
       // Check username is taken
       const { data: existing } = await supabase
         .from('profiles')
@@ -64,7 +97,7 @@ export default function LoginPage() {
         }
       }
 
-      setSuccess('Account created! Check your email to confirm, then sign in.')
+      setSuccess('Account created! You can now sign in.')
       setLoading(false)
 
     } else {
