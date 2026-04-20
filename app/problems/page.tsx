@@ -394,7 +394,131 @@ function SolvePage({ q, onBack }: { q: Question; onBack: () => void }) {
 
 // ─── MAIN PAGE ───────────────────────────────────────────────────────────────
 
-const FILTERS = ['all', 'easy', 'medium', 'hard', 'accounting', 'valuation', 'dcf', 'lbo']
+const DIFFICULTIES = ['easy', 'medium', 'hard']
+const CATEGORIES = ['accounting', 'valuation', 'dcf', 'lbo']
+
+export default function ProblemsPage() {
+  const [activeQ, setActiveQ] = useState<Question | null>(null)
+  const [solved, setSolved] = useState<Set<number>>(new Set())
+  const [selectedDiffs, setSelectedDiffs] = useState<Set<string>>(new Set())
+  const [selectedCats, setSelectedCats] = useState<Set<string>>(new Set())
+
+  const filtered = QUESTIONS.filter(q => {
+    const diffMatch = selectedDiffs.size === 0 || selectedDiffs.has(q.difficulty)
+    const catMatch = selectedCats.size === 0 || selectedCats.has(q.category)
+    return diffMatch && catMatch
+  })
+
+  function toggleDiff(d: string) {
+    setSelectedDiffs(prev => {
+      const next = new Set(prev)
+      next.has(d) ? next.delete(d) : next.add(d)
+      return next
+    })
+  }
+
+  function toggleCat(c: string) {
+    setSelectedCats(prev => {
+      const next = new Set(prev)
+      next.has(c) ? next.delete(c) : next.add(c)
+      return next
+    })
+  }
+
+  function openQ(q: Question) {
+    setActiveQ(q)
+    window.scrollTo(0, 0)
+  }
+
+  if (activeQ) {
+    return (
+      <main className="min-h-screen bg-zinc-950 text-zinc-100">
+        <header className="border-b border-zinc-800 px-4 py-3">
+          <div className="max-w-3xl mx-auto flex items-center gap-3">
+            <div className="w-7 h-7 bg-violet-600 rounded-md flex items-center justify-center font-mono text-[11px] text-white font-medium">FP</div>
+            <span className="font-serif text-base font-bold text-white">FinPrep</span>
+            <span className="ml-auto text-[11px] font-mono bg-zinc-800 border border-zinc-700 rounded-full px-3 py-1 text-zinc-400">
+              Solved: <span className="text-violet-400">{solved.size}</span>/{QUESTIONS.length}
+            </span>
+          </div>
+        </header>
+        <SolvePage q={activeQ} onBack={() => setActiveQ(null)} />
+      </main>
+    )
+  }
+
+  return (
+    <main className="min-h-screen bg-zinc-950 text-zinc-100">
+      <header className="border-b border-zinc-800 px-4 py-3">
+        <div className="max-w-3xl mx-auto flex items-center gap-3">
+          <div className="w-7 h-7 bg-violet-600 rounded-md flex items-center justify-center font-mono text-[11px] text-white font-medium">FP</div>
+          <span className="font-serif text-base font-bold text-white">FinPrep</span>
+          <span className="ml-auto text-[11px] font-mono bg-zinc-800 border border-zinc-700 rounded-full px-3 py-1 text-zinc-400">
+            Solved: <span className="text-violet-400">{solved.size}</span>/{QUESTIONS.length}
+          </span>
+        </div>
+      </header>
+
+      <div className="max-w-3xl mx-auto px-4 py-6">
+        {/* Filters */}
+        <div className="mb-4 space-y-2">
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-600 w-16">Difficulty</span>
+            {DIFFICULTIES.map(d => (
+              <button key={d} onClick={() => toggleDiff(d)}
+                className={`text-[11px] font-mono rounded-full px-3 py-1 border transition-colors ${selectedDiffs.has(d) ? diffColor[d] : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white'}`}>
+                {d}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-600 w-16">Category</span>
+            {CATEGORIES.map(c => (
+              <button key={c} onClick={() => toggleCat(c)}
+                className={`text-[11px] font-mono rounded-full px-3 py-1 border transition-colors ${selectedCats.has(c) ? 'bg-violet-600 border-violet-600 text-white' : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white'}`}>
+                {catLabel[c]}
+              </button>
+            ))}
+          </div>
+          {(selectedDiffs.size > 0 || selectedCats.size > 0) && (
+            <button onClick={() => { setSelectedDiffs(new Set()); setSelectedCats(new Set()) }}
+              className="text-[10px] font-mono text-zinc-500 hover:text-zinc-300 transition-colors">
+              × clear filters
+            </button>
+          )}
+        </div>
+
+        {/* Header row */}
+        <div className="grid grid-cols-[28px_1fr_100px_75px_72px] gap-3 px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-zinc-600 mb-1">
+          <div>#</div><div>Title</div><div>Category</div><div>Difficulty</div><div className="text-right">Status</div>
+        </div>
+
+        {/* Question list */}
+        <div className="flex flex-col gap-1">
+          {filtered.length === 0 && (
+            <div className="text-center py-10 text-zinc-600 text-[12px] font-mono">No questions match.</div>
+          )}
+          {filtered.map((q, i) => (
+            <button key={q.id} onClick={() => openQ(q)}
+              className="grid grid-cols-[28px_1fr_100px_75px_72px] gap-3 items-center px-3 py-2.5 rounded-lg bg-zinc-900 border border-transparent hover:bg-zinc-800 hover:border-zinc-700 text-left transition-all w-full">
+              <div className="font-mono text-[10px] text-zinc-600">{String(i + 1).padStart(2, '0')}</div>
+              <div>
+                <div className="text-[12px] font-medium text-zinc-100 leading-snug">{q.title}</div>
+                <div className="text-[10px] font-mono text-zinc-600 uppercase mt-0.5">{catLabel[q.category]}</div>
+              </div>
+              <div className="text-[10px] font-mono text-zinc-500">{q.type === 'structured' ? 'Structured' : 'Short Ans.'}</div>
+              <div><DiffBadge d={q.difficulty} /></div>
+              <div className="flex items-center justify-end gap-1.5">
+                <div className={`w-1.5 h-1.5 rounded-full ${solved.has(q.id) ? 'bg-emerald-500' : 'bg-zinc-700'}`} />
+                <span className="text-[10px] font-mono text-zinc-600">{solved.has(q.id) ? '✓' : '–'}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </main>
+  )
+}
 
 export default function ProblemsPage() {
   const [filter, setFilter] = useState('all')
