@@ -1024,7 +1024,7 @@ function DiffBadge({ d }: { d: string }) {
   return <span className={`inline-flex text-[10px] font-mono rounded px-2 py-0.5 font-medium ${diffColor[d]}`}>{d}</span>
 }
 
-function ResultsPanel({ q, result, onReset }: { q: Question; result: GradeResult; onReset: () => void }) {
+function ResultsPanel({ q, result, onReset, nextQ, onNext }: { q: Question; result: GradeResult; onReset: () => void; nextQ: Question | null; onNext: (q: Question) => void }) {
   const [idealOpen, setIdealOpen] = useState(false)
   const [missExpanded, setMissExpanded] = useState(false)
   const pct = Math.round((result.score / result.maxScore) * 100)
@@ -1037,7 +1037,14 @@ function ResultsPanel({ q, result, onReset }: { q: Question; result: GradeResult
 
   return (
     <div className="space-y-3">
-      <button onClick={onReset} className="text-[11px] font-mono text-violet-400 border border-zinc-700 rounded-md px-3 py-1.5 hover:bg-zinc-800 transition-colors">↺ Try again</button>
+      <div className="flex items-center gap-2">
+        <button onClick={onReset} className="text-[11px] font-mono text-violet-400 border border-zinc-700 rounded-md px-3 py-1.5 hover:bg-zinc-800 transition-colors">↺ Try again</button>
+        {nextQ && (
+          <button onClick={() => onNext(nextQ)} className="text-[11px] font-mono text-emerald-400 border border-emerald-800 bg-emerald-950/30 rounded-md px-3 py-1.5 hover:bg-emerald-900/50 transition-colors">
+            Next question → {nextQ.title.slice(0, 30)}...
+          </button>
+        )}
+      </div>
       <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 flex items-center gap-4">
         <div className="relative w-16 h-16 flex-shrink-0">
           <svg width="64" height="64" viewBox="0 0 64 64" style={{ transform: 'rotate(-90deg)' }}>
@@ -1133,8 +1140,10 @@ function ResultsPanel({ q, result, onReset }: { q: Question; result: GradeResult
   )
 }
 
-function SolvePage({ q, onBack, onSolved, userId }: { q: Question; onBack: () => void; onSolved: (id: number, score: number, max: number) => void; userId: string | null }) {
+function SolvePage({ q, onBack, onSolved, userId, onNext }: { q: Question; onBack: () => void; onSolved: (id: number, score: number, max: number) => void; userId: string | null; onNext: (q: Question) => void }) {
   const [answer, setAnswer] = useState('')
+  const currentIndex = QUESTIONS.findIndex(q2 => q2.id === q.id)
+  const nextQ = currentIndex < QUESTIONS.length - 1 ? QUESTIONS[currentIndex + 1] : null
   const [result, setResult] = useState<GradeResult | null>(null)
   const [grading, setGrading] = useState(false)
 
@@ -1196,7 +1205,7 @@ function SolvePage({ q, onBack, onSolved, userId }: { q: Question; onBack: () =>
           </div>
         </>
       )}
-      {result && <ResultsPanel q={q} result={result} onReset={reset} />}
+      {result && <ResultsPanel q={q} result={result} onReset={reset} nextQ={nextQ} onNext={(q) => { reset(); onNext(q) }} />}
     </div>
   )
 }
@@ -1260,7 +1269,7 @@ export default function ProblemsPage() {
     return (
       <main className="min-h-screen bg-zinc-950 text-zinc-100">
         <Navbar active="problems" />
-        <SolvePage q={activeQ} onBack={() => setActiveQ(null)} onSolved={handleSolved} userId={userId} />
+        <SolvePage q={activeQ} onBack={() => setActiveQ(null)} onSolved={handleSolved} userId={userId} onNext={(q) => { setActiveQ(q); window.scrollTo(0,0) }} />
       </main>
     )
   }
