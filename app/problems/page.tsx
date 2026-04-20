@@ -1,13 +1,13 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { supabase } from '../../lib/supabase'
 import Navbar from '../components/Navbar'
+import { supabase } from '../../lib/supabase'
 
 const QUESTIONS = [
   {
     id: 1, slug: 'depreciation-3-statements',
     title: "Walk me through the 3 statements effect of $10 depreciation increase",
-    difficulty: "easy", category: "accounting", type: "structured",
+    difficulty: "easy", category: "ib", type: "structured",
     prompt: "A company increases depreciation by $10. Walk me through how this flows through the Income Statement, Balance Sheet, and Cash Flow Statement. Assume 25% tax rate.",
     answerStructure: [
       { num: "1", text: "Income Statement — state what happens to EBIT and net income" },
@@ -29,7 +29,7 @@ const QUESTIONS = [
   {
     id: 2, slug: 'cash-acquisition-eps',
     title: "How does a $100M cash acquisition affect the acquirer's EPS?",
-    difficulty: "medium", category: "accounting", type: "structured",
+    difficulty: "medium", category: "ib", type: "structured",
     prompt: "An acquirer with 50M diluted shares and $200M net income acquires a target for $100M cash at 10x earnings. How does this affect EPS?",
     answerStructure: [
       { num: "1", text: "Calculate what the target earns (price ÷ PE multiple = $10M)" },
@@ -50,7 +50,7 @@ const QUESTIONS = [
   {
     id: 3, slug: 'dcf-methodology',
     title: "Explain the DCF valuation methodology",
-    difficulty: "easy", category: "dcf", type: "short",
+    difficulty: "easy", category: "ib", type: "short",
     prompt: "Explain how a DCF works, walk through the key steps, and describe its main limitations.",
     answerStructure: [
       { num: "1", text: "Define DCF in one sentence — what is it trying to do?" },
@@ -71,7 +71,7 @@ const QUESTIONS = [
   {
     id: 4, slug: 'ebitda-explained',
     title: "What is EBITDA and why do investors use it?",
-    difficulty: "easy", category: "valuation", type: "short",
+    difficulty: "easy", category: "ib", type: "short",
     prompt: "Explain what EBITDA is, how it is calculated, and why investors use it. What are its drawbacks?",
     answerStructure: [
       { num: "1", text: "Define the acronym and state the formula (EBIT + D&A)" },
@@ -91,7 +91,7 @@ const QUESTIONS = [
   {
     id: 5, slug: 'working-capital-fcf',
     title: "FCF impact when working capital increases by $20M",
-    difficulty: "medium", category: "accounting", type: "structured",
+    difficulty: "medium", category: "ib", type: "structured",
     prompt: "AR increases $15M, inventory increases $10M, AP increases $5M. Net income unchanged. What is the impact on Free Cash Flow?",
     answerStructure: [
       { num: "1", text: "State the rule: current asset ↑ = use of cash; current liability ↑ = source" },
@@ -111,7 +111,7 @@ const QUESTIONS = [
   {
     id: 6, slug: 'wacc-leverage',
     title: "What drives WACC and how does leverage affect it?",
-    difficulty: "medium", category: "dcf", type: "short",
+    difficulty: "medium", category: "ib", type: "short",
     prompt: "Explain the components of WACC and what happens to WACC as a company increases financial leverage.",
     answerStructure: [
       { num: "1", text: "Write out the WACC formula with all components" },
@@ -130,7 +130,7 @@ const QUESTIONS = [
   {
     id: 7, slug: 'lbo-return-drivers',
     title: "LBO — what are the key drivers of returns?",
-    difficulty: "hard", category: "lbo", type: "structured",
+    difficulty: "hard", category: "pe", type: "structured",
     prompt: "A PE fund buys a company at 8x EBITDA with 60% debt. Exits at 9x after 5 years; EBITDA grows $100M → $150M. What are the three main return drivers?",
     answerStructure: [
       { num: "1", text: "Name all three drivers upfront" },
@@ -150,7 +150,7 @@ const QUESTIONS = [
   {
     id: 8, slug: 'goodwill',
     title: "Goodwill: how is it created and when is it impaired?",
-    difficulty: "medium", category: "accounting", type: "short",
+    difficulty: "medium", category: "ib", type: "short",
     prompt: "Explain how goodwill is created in M&A, what it represents, and when it must be impaired.",
     answerStructure: [
       { num: "1", text: "Define goodwill + give the formula (Purchase Price – FV of Net Identifiable Assets)" },
@@ -169,7 +169,7 @@ const QUESTIONS = [
   {
     id: 9, slug: 'revenue-recognition',
     title: "When should revenue be recognized under ASC 606?",
-    difficulty: "medium", category: "accounting", type: "short",
+    difficulty: "medium", category: "ib", type: "short",
     prompt: "Explain the 5-step revenue recognition model under ASC 606 and give an example of how it applies to a software company.",
     answerStructure: [
       { num: "1", text: "Name the standard and what it replaced" },
@@ -190,7 +190,7 @@ const QUESTIONS = [
   {
     id: 10, slug: 'merger-accretion-dilution',
     title: "Walk me through a merger accretion/dilution analysis",
-    difficulty: "hard", category: "accounting", type: "structured",
+    difficulty: "hard", category: "ib", type: "structured",
     prompt: "Acquirer has $500M net income, 100M shares, trades at 20x P/E. Target has $50M net income, acquired for $1B (50% stock, 50% cash) at 5% interest rate. Is the deal accretive or dilutive?",
     answerStructure: [
       { num: "1", text: "Calculate new shares issued (stock portion ÷ acquirer share price)" },
@@ -211,7 +211,7 @@ const QUESTIONS = [
   {
     id: 11, slug: 'deferred-tax',
     title: "What are deferred tax assets and liabilities?",
-    difficulty: "medium", category: "accounting", type: "short",
+    difficulty: "medium", category: "ib", type: "short",
     prompt: "Explain what deferred tax assets and liabilities are, what creates them, and how they flow through the financial statements.",
     answerStructure: [
       { num: "1", text: "Define the core concept — timing difference between book and tax" },
@@ -230,7 +230,7 @@ const QUESTIONS = [
   {
     id: 12, slug: 'comparable-company-analysis',
     title: "Walk me through a comparable company analysis",
-    difficulty: "medium", category: "valuation", type: "structured",
+    difficulty: "medium", category: "ib", type: "structured",
     prompt: "Explain how you would value a company using comparable company analysis (trading comps). What multiples would you use and what are the limitations?",
     answerStructure: [
       { num: "1", text: "Define what comps is trying to do (market-based relative valuation)" },
@@ -251,7 +251,7 @@ const QUESTIONS = [
   {
     id: 13, slug: 'precedent-transactions',
     title: "How do precedent transactions differ from trading comps?",
-    difficulty: "medium", category: "valuation", type: "short",
+    difficulty: "medium", category: "ib", type: "short",
     prompt: "Explain what precedent transaction analysis is, how it differs from comparable company analysis, and when you would use each.",
     answerStructure: [
       { num: "1", text: "Define precedent transactions" },
@@ -270,7 +270,7 @@ const QUESTIONS = [
   {
     id: 14, slug: 'lbo-paper-lbo',
     title: "Walk me through a paper LBO",
-    difficulty: "hard", category: "lbo", type: "structured",
+    difficulty: "hard", category: "pe", type: "structured",
     prompt: "A PE fund buys a company for $500M (5x EBITDA of $100M) with 60% debt. EBITDA grows 10% per year. All FCF pays down debt. Exit at 5x after 5 years. What is the MOIC and approximate IRR?",
     answerStructure: [
       { num: "1", text: "Calculate entry equity check ($500M × 40% = $200M)" },
@@ -291,7 +291,7 @@ const QUESTIONS = [
   {
     id: 15, slug: 'stock-based-compensation',
     title: "How does stock-based compensation affect the 3 statements?",
-    difficulty: "medium", category: "accounting", type: "structured",
+    difficulty: "medium", category: "ib", type: "structured",
     prompt: "A company grants $10M in stock-based compensation. Walk through the impact on the income statement, cash flow statement, and balance sheet.",
     answerStructure: [
       { num: "1", text: "Income statement — SBC is an operating expense, reduces net income" },
@@ -310,7 +310,7 @@ const QUESTIONS = [
   {
     id: 16, slug: 'fcf-vs-ebitda',
     title: "What is the difference between EBITDA and Free Cash Flow?",
-    difficulty: "easy", category: "accounting", type: "short",
+    difficulty: "easy", category: "ib", type: "short",
     prompt: "Explain the difference between EBITDA and Free Cash Flow. When would a company have high EBITDA but low or negative FCF?",
     answerStructure: [
       { num: "1", text: "Define both metrics and their formulas" },
@@ -330,7 +330,7 @@ const QUESTIONS = [
   {
     id: 17, slug: 'enterprise-value-equity-value',
     title: "What is the difference between Enterprise Value and Equity Value?",
-    difficulty: "easy", category: "valuation", type: "short",
+    difficulty: "easy", category: "ib", type: "short",
     prompt: "Explain the difference between Enterprise Value and Equity Value. How do you bridge between the two?",
     answerStructure: [
       { num: "1", text: "Define Enterprise Value — value of the whole business" },
@@ -349,7 +349,7 @@ const QUESTIONS = [
   {
     id: 18, slug: 'synergies',
     title: "What are synergies in M&A and how are they valued?",
-    difficulty: "medium", category: "valuation", type: "short",
+    difficulty: "medium", category: "ib", type: "short",
     prompt: "Explain what synergies are in an M&A context, the different types, and how a banker would value them.",
     answerStructure: [
       { num: "1", text: "Define synergies — value created by combining two companies" },
@@ -369,7 +369,7 @@ const QUESTIONS = [
   {
     id: 19, slug: 'ib-pitch-valuation-football-field',
     title: "What valuation methodologies would you use to value a company?",
-    difficulty: "easy", category: "valuation", type: "short",
+    difficulty: "easy", category: "ib", type: "short",
     prompt: "An MD asks you to value a mid-size manufacturing company. What methodologies would you use and why? How would you present the results?",
     answerStructure: [
       { num: "1", text: "Name the 3 core methodologies upfront" },
@@ -389,7 +389,7 @@ const QUESTIONS = [
   {
     id: 20, slug: 'pe-value-creation',
     title: "How does a PE firm create value in a portfolio company?",
-    difficulty: "medium", category: "lbo", type: "short",
+    difficulty: "medium", category: "pe", type: "short",
     prompt: "Beyond financial engineering, how does a private equity firm actually create value in a portfolio company? Give specific examples.",
     answerStructure: [
       { num: "1", text: "Name the 3 main value creation levers" },
@@ -408,7 +408,7 @@ const QUESTIONS = [
   {
     id: 21, slug: 'wacc-components',
     title: "How do you calculate the cost of equity using CAPM?",
-    difficulty: "medium", category: "dcf", type: "short",
+    difficulty: "medium", category: "ib", type: "short",
     prompt: "Explain the CAPM formula, what each component represents, and how you would estimate each input in practice.",
     answerStructure: [
       { num: "1", text: "State the CAPM formula: Ke = Rf + β × (Rm – Rf)" },
@@ -427,7 +427,7 @@ const QUESTIONS = [
   {
     id: 22, slug: 'dividend-recapitalization',
     title: "What is a dividend recapitalization?",
-    difficulty: "hard", category: "lbo", type: "short",
+    difficulty: "hard", category: "pe", type: "short",
     prompt: "Explain what a dividend recapitalization is, why PE firms use it, and what the risks are.",
     answerStructure: [
       { num: "1", text: "Define dividend recap" },
@@ -446,7 +446,7 @@ const QUESTIONS = [
   {
     id: 23, slug: 'walk-me-through-dcf',
     title: "Walk me through a DCF step by step with numbers",
-    difficulty: "hard", category: "dcf", type: "structured",
+    difficulty: "hard", category: "ib", type: "structured",
     prompt: "A company has $100M EBITDA, $20M D&A, $15M capex, $10M increase in working capital, 25% tax rate, 10% WACC, 3% terminal growth rate. Walk through a 1-year DCF.",
     answerStructure: [
       { num: "1", text: "Calculate EBIT and NOPAT (EBIT × (1-tax))" },
@@ -490,7 +490,13 @@ function getScoreContext(pct: number) {
   return "Review this topic and try again — use the structure guide to build your answer step by step."
 }
 
-const catLabel: Record<string, string> = { accounting: 'Accounting', valuation: 'Valuation', dcf: 'DCF', lbo: 'LBO' }
+const catLabel: Record<string, string> = { ib: 'Investment Banking', pe: 'Private Equity', hf: 'Hedge Fund', general: 'General' }
+const catColor: Record<string, string> = {
+  ib: 'bg-blue-900/50 text-blue-400 border border-blue-800',
+  pe: 'bg-violet-900/50 text-violet-400 border border-violet-800',
+  hf: 'bg-amber-900/50 text-amber-400 border border-amber-800',
+  general: 'bg-zinc-800 text-zinc-400 border border-zinc-700',
+}
 const diffColor: Record<string, string> = {
   easy: 'bg-emerald-900/50 text-emerald-400 border border-emerald-800',
   medium: 'bg-amber-900/50 text-amber-400 border border-amber-800',
@@ -622,18 +628,13 @@ function SolvePage({ q, onBack, onSolved, userId }: { q: Question; onBack: () =>
       const r = grade(q, answer)
       setResult(r)
       setGrading(false)
-
-     // Save to Supabase if logged in
       if (userId) {
-        // Save/update solved status
         await supabase.from('solved_questions').upsert({
           user_id: userId,
           question_id: q.id,
           score: r.score,
           max_score: r.maxScore,
         }, { onConflict: 'user_id,question_id' })
-
-        // Save every attempt for history
         await supabase.from('attempts').insert({
           user_id: userId,
           question_id: q.id,
@@ -641,7 +642,6 @@ function SolvePage({ q, onBack, onSolved, userId }: { q: Question; onBack: () =>
           max_score: r.maxScore,
         })
       }
-
       onSolved(q.id, r.score, r.maxScore)
     }, 700)
   }
@@ -658,7 +658,7 @@ function SolvePage({ q, onBack, onSolved, userId }: { q: Question; onBack: () =>
       </button>
       <div className="flex items-center gap-2 mb-2">
         <DiffBadge d={q.difficulty} />
-        <span className="text-[10px] font-mono bg-zinc-800 border border-zinc-700 rounded px-2 py-0.5 text-zinc-400">{catLabel[q.category]}</span>
+        <span className={`text-[10px] font-mono rounded px-2 py-0.5 font-medium ${catColor[q.category]}`}>{catLabel[q.category]}</span>
         <span className="text-[10px] font-mono bg-zinc-800 border border-zinc-700 rounded px-2 py-0.5 text-zinc-400">{q.type === 'structured' ? 'Structured' : 'Short Answer'}</span>
       </div>
       <h1 className="text-xl font-semibold text-white mb-4 leading-snug" style={{fontFamily:'Georgia,serif'}}>{q.title}</h1>
@@ -685,7 +685,7 @@ function SolvePage({ q, onBack, onSolved, userId }: { q: Question; onBack: () =>
 }
 
 const DIFFICULTIES = ['easy', 'medium', 'hard']
-const CATEGORIES = ['accounting', 'valuation', 'dcf', 'lbo']
+const CATEGORIES = ['ib', 'pe', 'hf', 'general']
 
 export default function ProblemsPage() {
   const [activeQ, setActiveQ] = useState<Question | null>(null)
@@ -694,7 +694,6 @@ export default function ProblemsPage() {
   const [selectedCats, setSelectedCats] = useState<Set<string>>(new Set())
   const [userId, setUserId] = useState<string | null>(null)
 
-  // Load user and their solved questions on mount
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser()
@@ -735,8 +734,6 @@ export default function ProblemsPage() {
     setSolved(prev => new Set([...prev, id]))
   }
 
-  
-
   if (activeQ) {
     return (
       <main className="min-h-screen bg-zinc-950 text-zinc-100">
@@ -761,10 +758,10 @@ export default function ProblemsPage() {
             ))}
           </div>
           <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-600 w-16">Category</span>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-600 w-16">Role</span>
             {CATEGORIES.map(c => (
               <button key={c} onClick={() => toggleCat(c)}
-                className={`text-[11px] font-mono rounded-full px-3 py-1 border transition-colors ${selectedCats.has(c) ? 'bg-violet-600 border-violet-600 text-white' : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white'}`}>
+                className={`text-[11px] font-mono rounded-full px-3 py-1 border transition-colors ${selectedCats.has(c) ? catColor[c] : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white'}`}>
                 {catLabel[c]}
               </button>
             ))}
@@ -776,20 +773,19 @@ export default function ProblemsPage() {
             </button>
           )}
         </div>
-        <div className="grid grid-cols-[28px_1fr_100px_75px_72px] gap-3 px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-zinc-600 mb-1">
-          <div>#</div><div>Title</div><div>Category</div><div>Difficulty</div><div className="text-right">Status</div>
+        <div className="grid grid-cols-[28px_1fr_140px_75px_72px] gap-3 px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-zinc-600 mb-1">
+          <div>#</div><div>Title</div><div>Role</div><div>Difficulty</div><div className="text-right">Status</div>
         </div>
         <div className="flex flex-col gap-1">
           {filtered.length === 0 && <div className="text-center py-10 text-zinc-600 text-[12px] font-mono">No questions match.</div>}
           {filtered.map((q, i) => (
             <button key={q.id} onClick={() => openQ(q)}
-              className="grid grid-cols-[28px_1fr_100px_75px_72px] gap-3 items-center px-3 py-2.5 rounded-lg bg-zinc-900 border border-transparent hover:bg-zinc-800 hover:border-zinc-700 text-left transition-all w-full">
+              className="grid grid-cols-[28px_1fr_140px_75px_72px] gap-3 items-center px-3 py-2.5 rounded-lg bg-zinc-900 border border-transparent hover:bg-zinc-800 hover:border-zinc-700 text-left transition-all w-full">
               <div className="font-mono text-[10px] text-zinc-600">{String(i + 1).padStart(2, '0')}</div>
               <div>
                 <div className="text-[12px] font-medium text-zinc-100 leading-snug">{q.title}</div>
-                <div className="text-[10px] font-mono text-zinc-600 uppercase mt-0.5">{catLabel[q.category]}</div>
               </div>
-              <div className="text-[10px] font-mono text-zinc-500">{q.type === 'structured' ? 'Structured' : 'Short Ans.'}</div>
+              <div><span className={`text-[10px] font-mono rounded px-2 py-0.5 font-medium ${catColor[q.category]}`}>{catLabel[q.category]}</span></div>
               <div><DiffBadge d={q.difficulty} /></div>
               <div className="flex items-center justify-end gap-1.5">
                 <div className={`w-1.5 h-1.5 rounded-full ${solved.has(q.id) ? 'bg-emerald-500' : 'bg-zinc-700'}`} />
