@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
 
-export default function Navbar({ active }: { active: 'home' | 'problems' | 'login' }) {
+export default function Navbar({ active }: { active: 'home' | 'problems' | 'login' | 'dashboard' }) {
   const router = useRouter()
   const [username, setUsername] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -47,6 +47,9 @@ export default function Navbar({ active }: { active: 'home' | 'problems' | 'logi
           <Link href="/problems" className={`text-[13px] px-4 py-2 rounded-lg transition-colors ${active === 'problems' ? 'bg-zinc-800 text-white font-medium' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}>
             Questions
           </Link>
+          <Link href="/dashboard" className="text-[13px] px-4 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
+  Dashboard
+</Link>
         </div>
 
         <div className="ml-auto flex items-center gap-3">
