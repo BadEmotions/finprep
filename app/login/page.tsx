@@ -8,10 +8,10 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
+  const [username, setUsername] = useState('')
 
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100">
-      {/* Navbar */}
       <nav className="border-b border-zinc-800 px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2">
@@ -26,7 +26,6 @@ export default function LoginPage() {
         </div>
       </nav>
 
-      {/* Login form */}
       <div className="flex items-center justify-center min-h-[calc(100vh-73px)] px-6">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
@@ -35,12 +34,11 @@ export default function LoginPage() {
               {mode === 'signin' ? 'Welcome back' : 'Create your account'}
             </h1>
             <p className="text-zinc-400 text-[14px]">
-              {mode === 'signin' ? "Sign in to track your progress" : "Start practicing finance interviews for free"}
+              {mode === 'signin' ? 'Sign in to track your progress' : 'Start practicing finance interviews for free'}
             </p>
           </div>
 
           <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8">
-            {/* Toggle */}
             <div className="flex bg-zinc-800 rounded-lg p-1 mb-6">
               <button onClick={() => setMode('signin')}
                 className={`flex-1 text-[13px] font-medium py-2 rounded-md transition-colors ${mode === 'signin' ? 'bg-zinc-950 text-white' : 'text-zinc-400 hover:text-white'}`}>
@@ -54,12 +52,24 @@ export default function LoginPage() {
 
             <div className="space-y-4">
               {mode === 'signup' && (
-                <div>
-                  <label className="block text-[12px] font-mono text-zinc-400 uppercase tracking-wider mb-2">Full name</label>
-                  <input value={name} onChange={e => setName(e.target.value)}
-                    placeholder="John Smith"
-                    className="w-full bg-zinc-800 border border-zinc-700 focus:border-emerald-600 rounded-lg px-4 py-3 text-[14px] text-white placeholder-zinc-600 outline-none transition-colors" />
-                </div>
+                <>
+                  <div>
+                    <label className="block text-[12px] font-mono text-zinc-400 uppercase tracking-wider mb-2">Full name</label>
+                    <input value={name} onChange={e => setName(e.target.value)}
+                      placeholder="John Smith"
+                      className="w-full bg-zinc-800 border border-zinc-700 focus:border-emerald-600 rounded-lg px-4 py-3 text-[14px] text-white placeholder-zinc-600 outline-none transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-[12px] font-mono text-zinc-400 uppercase tracking-wider mb-2">Username</label>
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 text-[14px]">@</span>
+                      <input value={username} onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                        placeholder="johnsmith"
+                        className="w-full bg-zinc-800 border border-zinc-700 focus:border-emerald-600 rounded-lg pl-8 pr-4 py-3 text-[14px] text-white placeholder-zinc-600 outline-none transition-colors" />
+                    </div>
+                    <p className="text-[11px] text-zinc-600 mt-1 font-mono">Letters, numbers, underscores only</p>
+                  </div>
+                </>
               )}
               <div>
                 <label className="block text-[12px] font-mono text-zinc-400 uppercase tracking-wider mb-2">Email</label>
@@ -79,7 +89,7 @@ export default function LoginPage() {
             </div>
 
             <p className="text-center text-zinc-500 text-[12px] mt-6">
-              {mode === 'signin' ? "Don't have an account? " : "Already have an account? "}
+              {mode === 'signin' ? "Don't have an account? " : 'Already have an account? '}
               <button onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')} className="text-emerald-500 hover:text-emerald-400">
                 {mode === 'signin' ? 'Sign up free' : 'Sign in'}
               </button>
