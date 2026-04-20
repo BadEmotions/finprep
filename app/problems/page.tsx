@@ -325,14 +325,23 @@ function SolvePage({ q, onBack, onSolved, userId }: { q: Question; onBack: () =>
       setResult(r)
       setGrading(false)
 
-      // Save to Supabase if logged in
+     // Save to Supabase if logged in
       if (userId) {
+        // Save/update solved status
         await supabase.from('solved_questions').upsert({
           user_id: userId,
           question_id: q.id,
           score: r.score,
           max_score: r.maxScore,
         }, { onConflict: 'user_id,question_id' })
+
+        // Save every attempt for history
+        await supabase.from('attempts').insert({
+          user_id: userId,
+          question_id: q.id,
+          score: r.score,
+          max_score: r.maxScore,
+        })
       }
 
       onSolved(q.id, r.score, r.maxScore)
