@@ -28,6 +28,33 @@ const QUESTIONS = [
   { id: 21, title: "How do you calculate the cost of equity using CAPM?", difficulty: "medium", category: "ib" },
   { id: 22, title: "What is a dividend recapitalization?", difficulty: "hard", category: "pe" },
   { id: 23, title: "Walk me through a DCF step by step with numbers", difficulty: "hard", category: "ib" },
+  { id: 24, title: "Walk me through a purchase price allocation in M&A", difficulty: "hard", category: "ib" },
+  { id: 25, title: "Explain the debt structure in a typical LBO", difficulty: "hard", category: "pe" },
+  { id: 26, title: "How do NOLs affect an M&A transaction?", difficulty: "hard", category: "ib" },
+  { id: 27, title: "What is normalized EBITDA and why does it matter in M&A?", difficulty: "medium", category: "ib" },
+  { id: 28, title: "What are the key credit metrics used to evaluate LBO debt capacity?", difficulty: "medium", category: "pe" },
+  { id: 29, title: "What is the difference between growth equity and a leveraged buyout?", difficulty: "medium", category: "pe" },
+  { id: 30, title: "What is carried interest and how does the PE waterfall work?", difficulty: "hard", category: "pe" },
+  { id: 31, title: "IRR vs MOIC — which matters more in PE?", difficulty: "medium", category: "pe" },
+  { id: 32, title: "What is the difference between levered and unlevered beta?", difficulty: "hard", category: "ib" },
+  { id: 33, title: "What is a convertible note and how does it work?", difficulty: "medium", category: "ib" },
+  { id: 34, title: "How does minority interest affect valuation and the 3 statements?", difficulty: "hard", category: "ib" },
+  { id: 35, title: "What is the difference between operating and financial leverage?", difficulty: "medium", category: "ib" },
+  { id: 36, title: "How do rising interest rates affect company valuations?", difficulty: "medium", category: "ib" },
+  { id: 37, title: "What is the difference between a leveraged loan and a high yield bond?", difficulty: "hard", category: "ib" },
+  { id: 38, title: "How do you build a DCF sensitivity analysis?", difficulty: "medium", category: "ib" },
+  { id: 39, title: "How would you value a pre-revenue startup?", difficulty: "hard", category: "ib" },
+  { id: 40, title: "Why investment banking?", difficulty: "easy", category: "ib" },
+  { id: 41, title: "Tell me about a recent M&A deal you've been following", difficulty: "medium", category: "ib" },
+  { id: 42, title: "Pitch me a stock", difficulty: "hard", category: "ib" },
+  { id: 43, title: "What makes a good LBO candidate?", difficulty: "medium", category: "pe" },
+  { id: 44, title: "How is a private equity fund structured?", difficulty: "medium", category: "pe" },
+  { id: 45, title: "Walk me through the IPO process", difficulty: "medium", category: "ib" },
+  { id: 46, title: "What is the yield curve and what does it tell us?", difficulty: "medium", category: "ib" },
+  { id: 47, title: "Walk me through how you would build a merger model", difficulty: "hard", category: "ib" },
+  { id: 48, title: "What is management rollover in an LBO?", difficulty: "hard", category: "pe" },
+  { id: 49, title: "What are the two methods for calculating terminal value in a DCF?", difficulty: "medium", category: "ib" },
+  { id: 50, title: "What is happening in the markets right now?", difficulty: "medium", category: "ib" },
 ]
 
 const catLabel: Record<string, string> = { ib: 'Investment Banking', pe: 'Private Equity', hf: 'Hedge Fund', general: 'General' }
@@ -111,6 +138,30 @@ export default function DashboardPage() {
     )
   }
 
+  if (!loading && totalSolved === 0) {
+    return (
+      <main className="min-h-screen bg-zinc-950 text-zinc-100">
+        <Navbar active="dashboard" />
+        <div className="max-w-4xl mx-auto px-6 py-10">
+          <div className="mb-10">
+            <div className="text-[12px] font-mono text-zinc-500 mb-1">Dashboard</div>
+            <h1 style={{fontFamily:'Georgia,serif'}} className="text-3xl font-bold text-white">
+              {username ? `@${username}` : 'Your progress'}
+            </h1>
+          </div>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-12 text-center">
+            <div className="text-4xl mb-4">📊</div>
+            <h2 style={{fontFamily:'Georgia,serif'}} className="text-xl font-bold text-white mb-2">No attempts yet</h2>
+            <p className="text-zinc-400 text-[14px] mb-6">Solve your first question to start tracking your progress.</p>
+            <a href="/problems" className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-6 py-3 rounded-lg transition-colors text-[14px]">
+              Start practicing →
+            </a>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100">
       <Navbar active="dashboard" />
@@ -172,37 +223,31 @@ export default function DashboardPage() {
         {/* Recent attempts */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
           <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 mb-4">Recent attempts</div>
-          {attempts.length === 0 ? (
-            <div className="text-center py-8 text-zinc-600 text-[13px] font-mono">
-              No attempts yet — <a href="/problems" className="text-violet-400 hover:text-white">start practicing →</a>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {attempts.map((a) => {
-                const q = QUESTIONS.find(q => q.id === a.question_id)
-                const pct = Math.round((a.score / a.max_score) * 100)
-                const date = new Date(a.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-                return (
-                  <div key={a.id} className="flex items-center gap-3 py-2 border-b border-zinc-800 last:border-0">
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[12px] text-zinc-200 truncate">{q?.title ?? `Question ${a.question_id}`}</div>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        {q && <span className={`text-[10px] font-mono ${diffColor[q.difficulty]}`}>{q.difficulty}</span>}
-                        {q && <span className="text-[10px] font-mono text-zinc-600">{catLabel[q.category]}</span>}
-                        <span className="text-[10px] font-mono text-zinc-600">{date}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <div className="text-[11px] font-mono text-zinc-400">{a.score}/{a.max_score}</div>
-                      <div className={`text-[11px] font-mono font-medium px-2 py-0.5 rounded ${pct >= 75 ? 'text-emerald-400 bg-emerald-950/50' : pct >= 50 ? 'text-amber-400 bg-amber-950/50' : 'text-red-400 bg-red-950/50'}`}>
-                        {pct}%
-                      </div>
+          <div className="space-y-2">
+            {attempts.map((a) => {
+              const q = QUESTIONS.find(q => q.id === a.question_id)
+              const pct = Math.round((a.score / a.max_score) * 100)
+              const date = new Date(a.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+              return (
+                <div key={a.id} className="flex items-center gap-3 py-2 border-b border-zinc-800 last:border-0">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[12px] text-zinc-200 truncate">{q?.title ?? `Question ${a.question_id}`}</div>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      {q && <span className={`text-[10px] font-mono ${diffColor[q.difficulty]}`}>{q.difficulty}</span>}
+                      {q && <span className="text-[10px] font-mono text-zinc-600">{catLabel[q.category]}</span>}
+                      <span className="text-[10px] font-mono text-zinc-600">{date}</span>
                     </div>
                   </div>
-                )
-              })}
-            </div>
-          )}
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="text-[11px] font-mono text-zinc-400">{a.score}/{a.max_score}</div>
+                    <div className={`text-[11px] font-mono font-medium px-2 py-0.5 rounded ${pct >= 75 ? 'text-emerald-400 bg-emerald-950/50' : pct >= 50 ? 'text-amber-400 bg-amber-950/50' : 'text-red-400 bg-red-950/50'}`}>
+                      {pct}%
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </div>
 
       </div>
