@@ -1,26 +1,13 @@
 'use client'
 import Image from 'next/image'
 import Link from 'next/link'
+import Navbar from './components/Navbar'
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100">
-      <nav className="border-b border-zinc-800 px-6 py-4">
-        <div className="max-w-5xl mx-auto flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="FinPrep" width={32} height={32} className="rounded" />
-            <span style={{fontFamily:'Georgia,serif'}} className="text-lg font-bold text-white">FinPrep</span>
-          </Link>
-          <div className="flex items-center gap-1 ml-2">
-            <Link href="/" className="text-[13px] px-4 py-2 rounded-lg bg-zinc-800 text-white font-medium">Home</Link>
-            <Link href="/problems" className="text-[13px] px-4 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">Questions</Link>
-            <Link href="/login" className="text-[13px] px-4 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">Sign In</Link>
-          </div>
-          <div className="ml-auto">
-            <Link href="/problems" className="bg-emerald-600 hover:bg-emerald-700 text-white text-[13px] font-medium px-4 py-2 rounded-lg transition-colors">Start Practicing →</Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar active="home" />
+      
 
       <section className="max-w-5xl mx-auto px-6 py-24 text-center">
         <div className="inline-flex items-center gap-2 bg-zinc-800 border border-zinc-700 rounded-full px-4 py-1.5 text-[12px] text-zinc-400 font-mono mb-8">

@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
+import Navbar from '../components/Navbar'
 
 const QUESTIONS = [
   {
@@ -427,29 +428,12 @@ export default function ProblemsPage() {
     setSolved(prev => new Set([...prev, id]))
   }
 
-  const navbar = (
-    <nav className="border-b border-zinc-800 px-6 py-4">
-      <div className="max-w-5xl mx-auto flex items-center gap-8">
-        <a href="/" className="flex items-center gap-2">
-          <img src="/logo.png" alt="FinPrep" width={32} height={32} className="rounded" />
-          <span style={{fontFamily:'Georgia,serif'}} className="text-lg font-bold text-white">FinPrep</span>
-        </a>
-        <div className="flex items-center gap-1 ml-2">
-          <a href="/" className="text-[13px] px-4 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">Home</a>
-          <a href="/problems" className="text-[13px] px-4 py-2 rounded-lg bg-zinc-800 text-white font-medium">Questions</a>
-          <a href="/login" className="text-[13px] px-4 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">Sign In</a>
-        </div>
-        <span className="ml-auto text-[11px] font-mono bg-zinc-800 border border-zinc-700 rounded-full px-3 py-1 text-zinc-400">
-          Solved: <span className="text-violet-400">{solved.size}</span>/{QUESTIONS.length}
-        </span>
-      </div>
-    </nav>
-  )
+  
 
   if (activeQ) {
     return (
       <main className="min-h-screen bg-zinc-950 text-zinc-100">
-        {navbar}
+        <Navbar active="problems" />
         <SolvePage q={activeQ} onBack={() => setActiveQ(null)} onSolved={handleSolved} userId={userId} />
       </main>
     )
@@ -457,7 +441,7 @@ export default function ProblemsPage() {
 
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100">
-      {navbar}
+      <Navbar active="problems" />
       <div className="max-w-3xl mx-auto px-4 py-6">
         <div className="mb-4 space-y-2">
           <div className="flex flex-wrap gap-2 items-center">

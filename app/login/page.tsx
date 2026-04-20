@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
+import Navbar from './components/Navbar'
 
 const BLOCKLIST = [
   // Sexual
@@ -119,19 +120,7 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100">
-      <nav className="border-b border-zinc-800 px-6 py-4">
-        <div className="max-w-5xl mx-auto flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="FinPrep" width={32} height={32} className="rounded" />
-            <span style={{fontFamily:'Georgia,serif'}} className="text-lg font-bold text-white">FinPrep</span>
-          </Link>
-          <div className="flex items-center gap-1 ml-2">
-            <Link href="/" className="text-[13px] px-4 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">Home</Link>
-            <Link href="/problems" className="text-[13px] px-4 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">Questions</Link>
-            <Link href="/login" className="text-[13px] px-4 py-2 rounded-lg bg-zinc-800 text-white font-medium">Sign In</Link>
-          </div>
-        </div>
-      </nav>
+    <Navbar active="login" />
 
       <div className="flex items-center justify-center min-h-[calc(100vh-73px)] px-6">
         <div className="w-full max-w-md">
