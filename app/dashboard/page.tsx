@@ -5,22 +5,37 @@ import Navbar from '../components/Navbar'
 import { supabase } from '../../lib/supabase'
 
 const QUESTIONS = [
-  { id: 1, title: "Walk me through the 3 statements effect of $10 depreciation increase", difficulty: "easy", category: "accounting" },
-  { id: 2, title: "How does a $100M cash acquisition affect the acquirer's EPS?", difficulty: "medium", category: "accounting" },
-  { id: 3, title: "Explain the DCF valuation methodology", difficulty: "easy", category: "dcf" },
-  { id: 4, title: "What is EBITDA and why do investors use it?", difficulty: "easy", category: "valuation" },
-  { id: 5, title: "FCF impact when working capital increases by $20M", difficulty: "medium", category: "accounting" },
-  { id: 6, title: "What drives WACC and how does leverage affect it?", difficulty: "medium", category: "dcf" },
-  { id: 7, title: "LBO — what are the key drivers of returns?", difficulty: "hard", category: "lbo" },
-  { id: 8, title: "Goodwill: how is it created and when is it impaired?", difficulty: "medium", category: "accounting" },
+  { id: 1, title: "Walk me through the 3 statements effect of $10 depreciation increase", difficulty: "easy", category: "ib" },
+  { id: 2, title: "How does a $100M cash acquisition affect the acquirer's EPS?", difficulty: "medium", category: "ib" },
+  { id: 3, title: "Explain the DCF valuation methodology", difficulty: "easy", category: "ib" },
+  { id: 4, title: "What is EBITDA and why do investors use it?", difficulty: "easy", category: "ib" },
+  { id: 5, title: "FCF impact when working capital increases by $20M", difficulty: "medium", category: "ib" },
+  { id: 6, title: "What drives WACC and how does leverage affect it?", difficulty: "medium", category: "ib" },
+  { id: 7, title: "LBO — what are the key drivers of returns?", difficulty: "hard", category: "pe" },
+  { id: 8, title: "Goodwill: how is it created and when is it impaired?", difficulty: "medium", category: "ib" },
+  { id: 9, title: "When should revenue be recognized under ASC 606?", difficulty: "medium", category: "ib" },
+  { id: 10, title: "Walk me through a merger accretion/dilution analysis", difficulty: "hard", category: "ib" },
+  { id: 11, title: "What are deferred tax assets and liabilities?", difficulty: "medium", category: "ib" },
+  { id: 12, title: "Walk me through a comparable company analysis", difficulty: "medium", category: "ib" },
+  { id: 13, title: "How do precedent transactions differ from trading comps?", difficulty: "medium", category: "ib" },
+  { id: 14, title: "Walk me through a paper LBO", difficulty: "hard", category: "pe" },
+  { id: 15, title: "How does stock-based compensation affect the 3 statements?", difficulty: "medium", category: "ib" },
+  { id: 16, title: "What is the difference between EBITDA and Free Cash Flow?", difficulty: "easy", category: "ib" },
+  { id: 17, title: "What is the difference between Enterprise Value and Equity Value?", difficulty: "easy", category: "ib" },
+  { id: 18, title: "What are synergies in M&A and how are they valued?", difficulty: "medium", category: "ib" },
+  { id: 19, title: "What valuation methodologies would you use to value a company?", difficulty: "easy", category: "ib" },
+  { id: 20, title: "How does a PE firm create value in a portfolio company?", difficulty: "medium", category: "pe" },
+  { id: 21, title: "How do you calculate the cost of equity using CAPM?", difficulty: "medium", category: "ib" },
+  { id: 22, title: "What is a dividend recapitalization?", difficulty: "hard", category: "pe" },
+  { id: 23, title: "Walk me through a DCF step by step with numbers", difficulty: "hard", category: "ib" },
 ]
 
-const catLabel: Record<string, string> = { accounting: 'Accounting', valuation: 'Valuation', dcf: 'DCF', lbo: 'LBO' }
+const catLabel: Record<string, string> = { ib: 'Investment Banking', pe: 'Private Equity', hf: 'Hedge Fund', general: 'General' }
 const catColor: Record<string, string> = {
-  accounting: 'text-blue-400 bg-blue-950/30 border-blue-800',
-  valuation: 'text-violet-400 bg-violet-950/30 border-violet-800',
-  dcf: 'text-emerald-400 bg-emerald-950/30 border-emerald-800',
-  lbo: 'text-amber-400 bg-amber-950/30 border-amber-800',
+  ib: 'text-blue-400 bg-blue-950/30 border-blue-800',
+  pe: 'text-violet-400 bg-violet-950/30 border-violet-800',
+  hf: 'text-amber-400 bg-amber-950/30 border-amber-800',
+  general: 'text-zinc-400 bg-zinc-900 border-zinc-700',
 }
 const diffColor: Record<string, string> = {
   easy: 'text-emerald-400',
@@ -78,7 +93,7 @@ export default function DashboardPage() {
     ? Math.round(solved.reduce((sum, s) => sum + (s.score / s.max_score) * 100, 0) / solved.length)
     : 0
 
-  const categories = ['accounting', 'valuation', 'dcf', 'lbo']
+  const categories = ['ib', 'pe']
   const categoryStats = categories.map(cat => {
     const catQuestions = QUESTIONS.filter(q => q.category === cat)
     const catSolved = catQuestions.filter(q => solvedIds.has(q.id))
@@ -88,7 +103,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-zinc-950 text-zinc-100">
-        <Navbar active="home" />
+        <Navbar active="dashboard" />
         <div className="flex items-center justify-center h-64">
           <div className="text-zinc-600 font-mono text-[13px]">Loading...</div>
         </div>
@@ -98,7 +113,7 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100">
-      <Navbar active="home" />
+      <Navbar active="dashboard" />
       <div className="max-w-4xl mx-auto px-6 py-10">
 
         {/* Header */}
@@ -113,7 +128,9 @@ export default function DashboardPage() {
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
             <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 mb-2">Questions solved</div>
-            <div style={{fontFamily:'Georgia,serif'}} className="text-4xl font-bold text-white mb-1">{totalSolved}<span className="text-zinc-600 text-xl">/{totalQuestions}</span></div>
+            <div style={{fontFamily:'Georgia,serif'}} className="text-4xl font-bold text-white mb-1">
+              {totalSolved}<span className="text-zinc-600 text-xl">/{totalQuestions}</span>
+            </div>
             <div className="h-1.5 bg-zinc-800 rounded-full mt-3">
               <div className="h-1.5 bg-emerald-500 rounded-full transition-all" style={{width: `${(totalSolved/totalQuestions)*100}%`}} />
             </div>
@@ -136,7 +153,7 @@ export default function DashboardPage() {
 
         {/* Category breakdown */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 mb-6">
-          <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 mb-4">Progress by category</div>
+          <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 mb-4">Progress by role</div>
           <div className="grid grid-cols-2 gap-3">
             {categoryStats.map(({ cat, total, solved }) => (
               <div key={cat} className={`border rounded-lg p-4 ${catColor[cat]}`}>
@@ -156,7 +173,9 @@ export default function DashboardPage() {
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
           <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 mb-4">Recent attempts</div>
           {attempts.length === 0 ? (
-            <div className="text-center py-8 text-zinc-600 text-[13px] font-mono">No attempts yet — <a href="/problems" className="text-violet-400 hover:text-white">start practicing →</a></div>
+            <div className="text-center py-8 text-zinc-600 text-[13px] font-mono">
+              No attempts yet — <a href="/problems" className="text-violet-400 hover:text-white">start practicing →</a>
+            </div>
           ) : (
             <div className="space-y-2">
               {attempts.map((a) => {
