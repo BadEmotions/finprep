@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { supabase } from '../../lib/supabase'
 
 const QUESTIONS = [
   {
@@ -310,17 +311,30 @@ function ResultsPanel({ q, result, onReset }: { q: Question; result: GradeResult
   )
 }
 
-function SolvePage({ q, onBack }: { q: Question; onBack: () => void }) {
+function SolvePage({ q, onBack, onSolved, userId }: { q: Question; onBack: () => void; onSolved: (id: number, score: number, max: number) => void; userId: string | null }) {
   const [answer, setAnswer] = useState('')
   const [result, setResult] = useState<GradeResult | null>(null)
   const [grading, setGrading] = useState(false)
 
-  function submit() {
+  async function submit() {
     if (answer.trim().length < 10) return
     setGrading(true)
-    setTimeout(() => {
-      setResult(grade(q, answer))
+    setTimeout(async () => {
+      const r = grade(q, answer)
+      setResult(r)
       setGrading(false)
+
+      // Save to Supabase if logged in
+      if (userId) {
+        await supabase.from('solved_questions').upsert({
+          user_id: userId,
+          question_id: q.id,
+          score: r.score,
+          max_score: r.maxScore,
+        }, { onConflict: 'user_id,question_id' })
+      }
+
+      onSolved(q.id, r.score, r.maxScore)
     }, 700)
   }
 
@@ -370,6 +384,25 @@ export default function ProblemsPage() {
   const [solved, setSolved] = useState<Set<number>>(new Set())
   const [selectedDiffs, setSelectedDiffs] = useState<Set<string>>(new Set())
   const [selectedCats, setSelectedCats] = useState<Set<string>>(new Set())
+  const [userId, setUserId] = useState<string | null>(null)
+
+  // Load user and their solved questions on mount
+  useEffect(() => {
+    async function load() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setUserId(user.id)
+        const { data } = await supabase
+          .from('solved_questions')
+          .select('question_id')
+          .eq('user_id', user.id)
+        if (data) {
+          setSolved(new Set(data.map((r: { question_id: number }) => r.question_id)))
+        }
+      }
+    }
+    load()
+  }, [])
 
   const filtered = QUESTIONS.filter(q => {
     const diffMatch = selectedDiffs.size === 0 || selectedDiffs.has(q.difficulty)
@@ -388,6 +421,10 @@ export default function ProblemsPage() {
   function openQ(q: Question) {
     setActiveQ(q)
     window.scrollTo(0, 0)
+  }
+
+  function handleSolved(id: number, score: number, max: number) {
+    setSolved(prev => new Set([...prev, id]))
   }
 
   const navbar = (
@@ -413,7 +450,7 @@ export default function ProblemsPage() {
     return (
       <main className="min-h-screen bg-zinc-950 text-zinc-100">
         {navbar}
-        <SolvePage q={activeQ} onBack={() => setActiveQ(null)} />
+        <SolvePage q={activeQ} onBack={() => setActiveQ(null)} onSolved={handleSolved} userId={userId} />
       </main>
     )
   }
