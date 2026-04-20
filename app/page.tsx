@@ -28,8 +28,8 @@ export default function Home() {
 
       <section className="border-y border-zinc-800 py-12">
         <div className="max-w-5xl mx-auto px-6 grid grid-cols-3 gap-8 text-center">
-          <div><div style={{fontFamily:'Georgia,serif'}} className="text-4xl font-bold text-white mb-2">8+</div><div className="text-zinc-400 text-[14px]">Finance questions</div></div>
-          <div><div style={{fontFamily:'Georgia,serif'}} className="text-4xl font-bold text-white mb-2">4</div><div className="text-zinc-400 text-[14px]">Topic categories</div></div>
+          <div><div style={{fontFamily:'Georgia,serif'}} className="text-4xl font-bold text-white mb-2">50+</div><div className="text-zinc-400 text-[14px]">Finance questions</div></div>
+          <div><div style={{fontFamily:'Georgia,serif'}} className="text-4xl font-bold text-white mb-2">2</div><div className="text-zinc-400 text-[14px]">Role categories (IB & PE)</div></div>
           <div><div style={{fontFamily:'Georgia,serif'}} className="text-4xl font-bold text-white mb-2">100%</div><div className="text-zinc-400 text-[14px]">Free to use</div></div>
         </div>
       </section>

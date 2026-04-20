@@ -1210,6 +1210,7 @@ export default function ProblemsPage() {
   const [selectedDiffs, setSelectedDiffs] = useState<Set<string>>(new Set())
   const [selectedCats, setSelectedCats] = useState<Set<string>>(new Set())
   const [userId, setUserId] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     async function load() {
@@ -1231,8 +1232,12 @@ export default function ProblemsPage() {
   const filtered = QUESTIONS.filter(q => {
     const diffMatch = selectedDiffs.size === 0 || selectedDiffs.has(q.difficulty)
     const catMatch = selectedCats.size === 0 || selectedCats.has(q.category)
-    return diffMatch && catMatch
+    const searchMatch = search.trim() === '' || q.title.toLowerCase().includes(search.toLowerCase())
+    return diffMatch && catMatch && searchMatch
   })
+
+  const ibCount = QUESTIONS.filter(q => q.category === 'ib').length
+  const peCount = QUESTIONS.filter(q => q.category === 'pe').length
 
   function toggleDiff(d: string) {
     setSelectedDiffs(prev => { const next = new Set(prev); next.has(d) ? next.delete(d) : next.add(d); return next })
@@ -1264,6 +1269,26 @@ export default function ProblemsPage() {
     <main className="min-h-screen bg-zinc-950 text-zinc-100">
       <Navbar active="problems" />
       <div className="max-w-3xl mx-auto px-4 py-6">
+        {/* Stats + Search */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex-1 relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-[13px]">🔍</span>
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search questions..."
+              className="w-full bg-zinc-900 border border-zinc-700 focus:border-violet-500 rounded-lg pl-8 pr-4 py-2 text-[13px] text-zinc-200 placeholder-zinc-600 outline-none transition-colors"
+            />
+            {search && (
+              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white text-[13px]">×</button>
+            )}
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <span className="text-[11px] font-mono bg-blue-950/50 border border-blue-800 text-blue-400 rounded-full px-3 py-1">{ibCount} IB</span>
+            <span className="text-[11px] font-mono bg-violet-950/50 border border-violet-800 text-violet-400 rounded-full px-3 py-1">{peCount} PE</span>
+          </div>
+        </div>
+
         <div className="mb-4 space-y-2">
           <div className="flex flex-wrap gap-2 items-center">
             <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-600 w-16">Difficulty</span>
