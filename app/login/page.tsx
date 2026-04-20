@@ -2,13 +2,87 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '../../lib/supabase'
 
 export default function LoginPage() {
+  const router = useRouter()
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const [username, setUsername] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+
+  async function handleSubmit() {
+    setError('')
+    setSuccess('')
+    setLoading(true)
+
+    if (mode === 'signup') {
+      // Check username is taken
+      const { data: existing } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('username', username.toLowerCase())
+        .single()
+
+      if (existing) {
+        setError('That username is already taken. Try another one.')
+        setLoading(false)
+        return
+      }
+
+      // Sign up
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+      })
+
+      if (signUpError) {
+        setError(signUpError.message)
+        setLoading(false)
+        return
+      }
+
+      // Create profile
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            username: username.toLowerCase(),
+            full_name: name,
+          })
+
+        if (profileError) {
+          setError(profileError.message)
+          setLoading(false)
+          return
+        }
+      }
+
+      setSuccess('Account created! Check your email to confirm, then sign in.')
+      setLoading(false)
+
+    } else {
+      // Sign in
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (signInError) {
+        setError(signInError.message)
+        setLoading(false)
+        return
+      }
+
+      router.push('/problems')
+    }
+  }
 
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100">
@@ -40,15 +114,18 @@ export default function LoginPage() {
 
           <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8">
             <div className="flex bg-zinc-800 rounded-lg p-1 mb-6">
-              <button onClick={() => setMode('signin')}
+              <button onClick={() => { setMode('signin'); setError(''); setSuccess('') }}
                 className={`flex-1 text-[13px] font-medium py-2 rounded-md transition-colors ${mode === 'signin' ? 'bg-zinc-950 text-white' : 'text-zinc-400 hover:text-white'}`}>
                 Sign in
               </button>
-              <button onClick={() => setMode('signup')}
+              <button onClick={() => { setMode('signup'); setError(''); setSuccess('') }}
                 className={`flex-1 text-[13px] font-medium py-2 rounded-md transition-colors ${mode === 'signup' ? 'bg-zinc-950 text-white' : 'text-zinc-400 hover:text-white'}`}>
                 Sign up
               </button>
             </div>
+
+            {error && <div className="bg-red-950/50 border border-red-800 rounded-lg px-4 py-3 text-[13px] text-red-400 mb-4">{error}</div>}
+            {success && <div className="bg-emerald-950/50 border border-emerald-800 rounded-lg px-4 py-3 text-[13px] text-emerald-400 mb-4">{success}</div>}
 
             <div className="space-y-4">
               {mode === 'signup' && (
@@ -83,14 +160,16 @@ export default function LoginPage() {
                   type="password" placeholder="••••••••"
                   className="w-full bg-zinc-800 border border-zinc-700 focus:border-emerald-600 rounded-lg px-4 py-3 text-[14px] text-white placeholder-zinc-600 outline-none transition-colors" />
               </div>
-              <button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-lg transition-colors text-[14px] mt-2">
-                {mode === 'signin' ? 'Sign in →' : 'Create account →'}
+              <button onClick={handleSubmit} disabled={loading}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-medium py-3 rounded-lg transition-colors text-[14px] mt-2">
+                {loading ? 'Loading…' : mode === 'signin' ? 'Sign in →' : 'Create account →'}
               </button>
             </div>
 
             <p className="text-center text-zinc-500 text-[12px] mt-6">
               {mode === 'signin' ? "Don't have an account? " : 'Already have an account? '}
-              <button onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')} className="text-emerald-500 hover:text-emerald-400">
+              <button onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError(''); setSuccess('') }}
+                className="text-emerald-500 hover:text-emerald-400">
                 {mode === 'signin' ? 'Sign up free' : 'Sign in'}
               </button>
             </p>
