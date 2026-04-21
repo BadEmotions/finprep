@@ -222,7 +222,8 @@ export default function ProblemsPage() {
 
   useEffect(() => {
   async function load() {
-    const { data } = await supabase.from('questions').select('*').order('id')
+    const { data, error } = await supabase.from('questions').select('*').order('id')
+if (error) console.error('Supabase error:', error)
     if (data) {
       setQuestions(data)
       const params = new URLSearchParams(window.location.search)
