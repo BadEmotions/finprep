@@ -87,7 +87,7 @@ export default function Home() {
             <Image src="/logo.png" alt="FinPrep" width={24} height={24} className="rounded" />
             <span className="text-zinc-500 text-[13px]">FinPrep</span>
           </div>
-          <div className="text-zinc-600 text-[12px] font-mono">Finance interview practice</div>
+          <div className="text-zinc-600 text-[12px] font-mono">finprep.academy</div>
         </div>
       </footer>
     </main>
