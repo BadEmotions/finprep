@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
 
-export default function Navbar({ active }: { active: 'home' | 'problems' | 'login' | 'dashboard' }) {
+export default function Navbar({ active }: { active: 'home' | 'problems' | 'login' | 'dashboard' | 'trader'}) {
   const router = useRouter()
   const pathname = usePathname()
   const [username, setUsername] = useState<string | null>(null)
@@ -68,6 +68,9 @@ export default function Navbar({ active }: { active: 'home' | 'problems' | 'logi
           </Link>
           <Link href="/problems" className={`text-[13px] px-4 py-2 rounded-lg transition-colors ${active === 'problems' ? 'bg-zinc-800 text-white font-medium' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}>
             Questions
+          </Link>
+          <Link href="/trader-math" className={`text-[13px] px-4 py-2 rounded-lg transition-colors ${active === 'trader' ? 'bg-zinc-800 text-white font-medium' : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'}`}>
+          Trader Math
           </Link>
           {username && (
             <Link href="/dashboard" className={`text-[13px] px-4 py-2 rounded-lg transition-colors ${active === 'dashboard' ? 'bg-zinc-800 text-white font-medium' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}>
