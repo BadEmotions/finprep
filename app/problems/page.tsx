@@ -221,19 +221,27 @@ export default function ProblemsPage() {
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-    async function load() {
-      const { data } = await supabase.from('questions').select('*').order('id')
-      if (data) setQuestions(data)
-      setLoading(false)
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        setUserId(user.id)
-        const { data: solvedData } = await supabase.from('solved_questions').select('question_id').eq('user_id', user.id)
-        if (solvedData) setSolved(new Set(solvedData.map(s => s.question_id)))
+  async function load() {
+    const { data } = await supabase.from('questions').select('*').order('id')
+    if (data) {
+      setQuestions(data)
+      const params = new URLSearchParams(window.location.search)
+      const qParam = params.get('q')
+      if (qParam) {
+        const found = data.find((q: Question) => q.id === parseInt(qParam))
+        if (found) setActiveQ(found)
       }
     }
-    load()
-  }, [])
+    setLoading(false)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      setUserId(user.id)
+      const { data: solvedData } = await supabase.from('solved_questions').select('question_id').eq('user_id', user.id)
+      if (solvedData) setSolved(new Set(solvedData.map((s: {question_id: number}) => s.question_id)))
+    }
+  }
+  load()
+}, [])
 
   function handleSolved(id: number, score: number, max: number) {
     setSolved(prev => new Set([...prev, id]))

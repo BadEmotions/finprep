@@ -229,7 +229,7 @@ export default function DashboardPage() {
               const pct = Math.round((a.score / a.max_score) * 100)
               const date = new Date(a.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
               return (
-                <div key={a.id} className="flex items-center gap-3 py-2 border-b border-zinc-800 last:border-0">
+                <div key={a.id} onClick={() => window.location.href = `/problems?q=${a.question_id}`} className="flex items-center gap-3 py-2 border-b border-zinc-800 last:border-0 cursor-pointer hover:bg-zinc-800/50 rounded-lg px-2 -mx-2 transition-colors">
                   <div className="flex-1 min-w-0">
                     <div className="text-[12px] text-zinc-200 truncate">{q?.title ?? `Question ${a.question_id}`}</div>
                     <div className="flex items-center gap-2 mt-0.5">
