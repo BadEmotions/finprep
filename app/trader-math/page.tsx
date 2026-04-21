@@ -243,23 +243,25 @@ export default function TraderMathPage() {
   }
 
   async function endGame() {
-    setScreen('gameover')
-    if (userId && username) {
-      const avgTime = questionTimes.length > 0
-        ? questionTimes.reduce((a, b) => a + b, 0) / questionTimes.length
-        : 0
-      await supabase.from('trader_scores').insert({
-        user_id: userId,
-        username,
-        mode,
-        score,
-        correct,
-        wrong,
-        avg_time_seconds: Math.round(avgTime * 10) / 10
-      })
-      setScoreSaved(true)
-    }
+  setScreen('gameover')
+  console.log('endGame called, userId:', userId, 'username:', username)
+  if (userId && username) {
+    const avgTime = questionTimes.length > 0
+      ? questionTimes.reduce((a, b) => a + b, 0) / questionTimes.length
+      : 0
+    const { error } = await supabase.from('trader_scores').insert({
+      user_id: userId,
+      username,
+      mode,
+      score,
+      correct,
+      wrong,
+      avg_time_seconds: Math.round(avgTime * 10) / 10
+    })
+    console.log('insert error:', error)
+    setScoreSaved(true)
   }
+}
 
   function submitAnswer() {
     if (!question || feedback) return
@@ -434,7 +436,7 @@ export default function TraderMathPage() {
             className="border border-zinc-700 hover:border-zinc-500 text-zinc-300 font-medium px-6 py-3 rounded-lg transition-colors text-[14px]">
             Try {mode === 'easy' ? 'Hard' : 'Easy'} mode
           </button>
-          <button onClick={loadLeaderboard}
+          <button onClick={() => loadLeaderboard()}
             className="border border-zinc-700 hover:border-zinc-500 text-zinc-300 font-medium px-6 py-3 rounded-lg transition-colors text-[14px]">
             Leaderboard
           </button>
