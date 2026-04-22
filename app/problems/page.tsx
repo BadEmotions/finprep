@@ -1,5 +1,4 @@
 'use client'
-export const dynamic = 'force-dynamic'
 import { useState, useEffect, useRef } from 'react'
 import Navbar from '../components/Navbar'
 import { supabase } from '../../lib/supabase'
@@ -197,7 +196,7 @@ function SolvePage({ q, onBack, onSolved, userId, onNext, questions }: {
               className="w-full bg-zinc-900 border border-zinc-700 focus:border-violet-500 rounded-lg p-3 pr-28 text-[13px] text-zinc-200 placeholder-zinc-600 resize-none h-28 outline-none"
             />
             <button onClick={submit} disabled={grading || answer.trim().length < 10}
-              className="absolute bottom-3 right-3 bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white text-[12px] font-medium rounded-md px-3 py-1.5 transition-colors w-">
+              className="absolute bottom-3 right-3 bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white text-[12px] font-medium rounded-md px-3 py-1.5 transition-colors">
               {grading ? 'Grading…' : 'Grade →'}
             </button>
           </div>
@@ -222,28 +221,27 @@ export default function ProblemsPage() {
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-  async function load() {
-    const { data, error } = await supabase.from('questions').select('*').order('id')
-if (error) console.error('Supabase error:', error)
-    if (data) {
-      setQuestions(data)
-      const params = new URLSearchParams(window.location.search)
-      const qParam = params.get('q')
-      if (qParam) {
-        const found = data.find((q: Question) => q.id === parseInt(qParam))
-        if (found) setActiveQ(found)
+    async function load() {
+      const { data } = await supabase.from('questions').select('*').order('id')
+      if (data) {
+        setQuestions(data)
+        const params = new URLSearchParams(window.location.search)
+        const qParam = params.get('q')
+        if (qParam) {
+          const found = data.find((q: Question) => q.id === parseInt(qParam))
+          if (found) setActiveQ(found)
+        }
+      }
+      setLoading(false)
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setUserId(user.id)
+        const { data: solvedData } = await supabase.from('solved_questions').select('question_id').eq('user_id', user.id)
+        if (solvedData) setSolved(new Set(solvedData.map((s: { question_id: number }) => s.question_id)))
       }
     }
-    setLoading(false)
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      setUserId(user.id)
-      const { data: solvedData } = await supabase.from('solved_questions').select('question_id').eq('user_id', user.id)
-      if (solvedData) setSolved(new Set(solvedData.map((s: {question_id: number}) => s.question_id)))
-    }
-  }
-  load()
-}, [])
+    load()
+  }, [])
 
   function handleSolved(id: number, score: number, max: number) {
     setSolved(prev => new Set([...prev, id]))
@@ -289,7 +287,6 @@ if (error) console.error('Supabase error:', error)
           <h1 style={{fontFamily:'Georgia,serif'}} className="text-3xl font-bold text-white">Practice questions</h1>
         </div>
 
-        {/* Search */}
         <div className="mb-4">
           <input
             type="text"
@@ -300,7 +297,6 @@ if (error) console.error('Supabase error:', error)
           />
         </div>
 
-        {/* Filters */}
         <div className="flex flex-wrap gap-2 mb-6">
           {CATEGORIES.map(c => (
             <button key={c} onClick={() => toggleCat(c)}
@@ -317,7 +313,6 @@ if (error) console.error('Supabase error:', error)
           ))}
         </div>
 
-        {/* Question list */}
         {loading ? (
           <div className="text-zinc-600 font-mono text-[13px]">Loading questions...</div>
         ) : (

@@ -1,5 +1,4 @@
 'use client'
-export const dynamic = 'force-dynamic'
 import { useState, useEffect, useRef } from 'react'
 import Navbar from '../components/Navbar'
 import { supabase } from '../../lib/supabase'
