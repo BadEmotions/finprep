@@ -23,36 +23,33 @@ type ScoreEntry = {
   created_at: string
 }
 
+const PER_PAGE = 10
+
 // ─── EASY QUESTIONS ───────────────────────────────────────────────────────────
 function generateEasyQuestion(): Question {
   const type = Math.floor(Math.random() * 5)
 
   if (type === 0) {
-    // Multiplication — friendly numbers
     const pairs = [[25,12],[15,8],[50,14],[20,35],[25,16],[40,15],[12,15],[25,24],[30,14],[16,25],[50,22],[20,45]]
     const [a, b] = pairs[Math.floor(Math.random() * pairs.length)]
     return { question: `${a} × ${b} = ?`, answer: a * b, explanation: `${a} × ${b} = ${a * b}` }
   }
   if (type === 1) {
-    // Division — clean results
     const pairs = [[840,4],[750,25],[360,12],[480,8],[900,15],[650,25],[720,9],[450,18],[840,7],[560,14]]
     const [a, b] = pairs[Math.floor(Math.random() * pairs.length)]
     return { question: `${a} ÷ ${b} = ?`, answer: a / b, explanation: `${a} ÷ ${b} = ${a / b}` }
   }
   if (type === 2) {
-    // Percentages — clean numbers
     const pcts = [[15,200],[20,350],[25,160],[10,430],[5,600],[15,400],[20,250],[25,240],[10,870],[30,200]]
     const [p, n] = pcts[Math.floor(Math.random() * pcts.length)]
     const ans = (p / 100) * n
     return { question: `${p}% of ${n} = ?`, answer: ans, explanation: `${p}% × ${n} = ${ans}` }
   }
   if (type === 3) {
-    // Fractions to %
     const fracs: [number, number, number][] = [[1,4,25],[3,4,75],[1,8,12.5],[3,8,37.5],[1,5,20],[2,5,40],[3,5,60],[1,2,50],[7,8,87.5],[1,10,10]]
     const [n, d, ans] = fracs[Math.floor(Math.random() * fracs.length)]
     return { question: `${n}/${d} as a percentage = ?`, answer: ans, tolerance: 0.1, explanation: `${n}/${d} = ${ans}%` }
   }
-  // Rule of 72
   const rates = [6, 8, 9, 12, 4, 3, 6, 8]
   const rate = rates[Math.floor(Math.random() * rates.length)]
   const ans = Math.round(72 / rate)
@@ -64,19 +61,16 @@ function generateHardQuestion(): Question {
   const type = Math.floor(Math.random() * 6)
 
   if (type === 0) {
-    // Harder multiplication
     const pairs = [[17,23],[19,21],[13,27],[16,24],[18,22],[14,26],[23,17],[27,13],[34,15],[45,12],[36,14],[28,25]]
     const [a, b] = pairs[Math.floor(Math.random() * pairs.length)]
     return { question: `${a} × ${b} = ?`, answer: a * b, explanation: `${a} × ${b} = ${a * b}` }
   }
   if (type === 1) {
-    // Harder division
     const safePairs = [[391,17],[483,21],[672,24],[525,15],[646,17],[374,22],[432,18],[510,15]]
     const [a, b] = safePairs[Math.floor(Math.random() * safePairs.length)]
     return { question: `${a} ÷ ${b} = ?`, answer: a / b, tolerance: 0.5, explanation: `${a} ÷ ${b} = ${a / b}` }
   }
   if (type === 2) {
-    // Probability — coin flips
     const scenarios: [string, number, string][] = [
       ['exactly 2 heads in 3 flips', 37.5, '3 ways (HHT,HTH,THH) out of 8 = 3/8 = 37.5%'],
       ['exactly 3 heads in 4 flips', 25, 'C(4,3)/16 = 4/16 = 25%'],
@@ -89,7 +83,6 @@ function generateHardQuestion(): Question {
     return { question: `Fair coin: P(${scenario}) = ? (answer as %)`, answer: ans, tolerance: 0.5, explanation }
   }
   if (type === 3) {
-    // Probability — dice
     const scenarios: [string, number, string][] = [
       ['rolling a sum of 7 with 2 dice', 16.7, '6 ways out of 36 = 1/6 ≈ 16.7%'],
       ['rolling a sum of 6 with 2 dice', 13.9, '5 ways out of 36 ≈ 13.9%'],
@@ -101,7 +94,6 @@ function generateHardQuestion(): Question {
     return { question: `2 dice: P(${scenario}) = ? (answer as %)`, answer: ans, tolerance: 1, explanation }
   }
   if (type === 4) {
-    // Expected value
     const evs: [string, number, string][] = [
       ['A bet pays $150 if you roll a 6 (1 die), costs $20 to play. EV = $?', 5, 'EV = (1/6 × $150) - (5/6 × $20) = $25 - $16.67 = $8.33... closest: $5 — use: (150/6) - 20 = 25 - 20 = $5'],
       ['A coin flip pays $80 for heads, you lose $40 for tails. EV = $?', 20, 'EV = 0.5×$80 + 0.5×(-$40) = $40 - $20 = $20'],
@@ -111,7 +103,6 @@ function generateHardQuestion(): Question {
     const [q, ans, explanation] = evs[Math.floor(Math.random() * evs.length)]
     return { question: q, answer: ans, tolerance: 2, explanation }
   }
-  // Percentage change
   const changes: [number, number][] = [[40,47],[50,60],[80,92],[100,115],[200,230],[60,75],[120,138]]
   const [from, to] = changes[Math.floor(Math.random() * changes.length)]
   const ans = Math.round(((to - from) / from) * 100)
@@ -162,6 +153,9 @@ export default function TraderMathPage() {
   const [questionStart, setQuestionStart] = useState<number>(0)
   const [timerKey, setTimerKey] = useState(0)
   const [leaderboard, setLeaderboard] = useState<ScoreEntry[]>([])
+  const [leaderboardPage, setLeaderboardPage] = useState(0)
+  const [leaderboardTotal, setLeaderboardTotal] = useState(0)
+  const [leaderboardMode, setLeaderboardMode] = useState<Mode>('easy')
   const [username, setUsername] = useState<string | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
   const [scoreSaved, setScoreSaved] = useState(false)
@@ -243,25 +237,23 @@ export default function TraderMathPage() {
   }
 
   async function endGame() {
-  setScreen('gameover')
-  console.log('endGame called, userId:', userId, 'username:', username)
-  if (userId && username) {
-    const avgTime = questionTimes.length > 0
-      ? questionTimes.reduce((a, b) => a + b, 0) / questionTimes.length
-      : 0
-    const { error } = await supabase.from('trader_scores').insert({
-      user_id: userId,
-      username,
-      mode,
-      score,
-      correct,
-      wrong,
-      avg_time_seconds: Math.round(avgTime * 10) / 10
-    })
-    console.log('insert error:', error)
-    setScoreSaved(true)
+    setScreen('gameover')
+    if (userId && username) {
+      const avgTime = questionTimes.length > 0
+        ? questionTimes.reduce((a, b) => a + b, 0) / questionTimes.length
+        : 0
+      await supabase.from('trader_scores').insert({
+        user_id: userId,
+        username,
+        mode,
+        score,
+        correct,
+        wrong,
+        avg_time_seconds: Math.round(avgTime * 10) / 10
+      })
+      setScoreSaved(true)
+    }
   }
-}
 
   function submitAnswer() {
     if (!question || feedback) return
@@ -275,20 +267,31 @@ export default function TraderMathPage() {
     }
   }
 
-  async function loadLeaderboard() {
-    const { data } = await supabase
+  async function loadLeaderboard(m?: Mode, page?: number) {
+    const targetMode = m ?? leaderboardMode
+    const targetPage = page ?? 0
+    const from = targetPage * PER_PAGE
+    const to = from + PER_PAGE - 1
+
+    const { data, count } = await supabase
       .from('trader_scores')
-      .select('*')
-      .eq('mode', mode)
+      .select('*', { count: 'exact' })
+      .eq('mode', targetMode)
       .order('score', { ascending: false })
-      .limit(10)
+      .range(from, Math.min(to, 99))
+
     if (data) setLeaderboard(data)
+    setLeaderboardTotal(Math.min(count ?? 0, 100))
+    setLeaderboardMode(targetMode)
+    setLeaderboardPage(targetPage)
     setScreen('leaderboard')
   }
 
   const avgTime = questionTimes.length > 0
     ? (questionTimes.reduce((a, b) => a + b, 0) / questionTimes.length).toFixed(1)
     : '0'
+
+  const totalPages = Math.ceil(leaderboardTotal / PER_PAGE)
 
   // ── HOME ────────────────────────────────────────────────────────────────────
   if (screen === 'home') return (
@@ -314,7 +317,7 @@ export default function TraderMathPage() {
             <div className="text-[11px] font-mono text-red-400">30s timer · 3 lives</div>
           </div>
         </div>
-        <button onClick={loadLeaderboard} className="text-[12px] font-mono text-zinc-500 hover:text-zinc-300 transition-colors">
+        <button onClick={() => loadLeaderboard('easy', 0)} className="text-[12px] font-mono text-zinc-500 hover:text-zinc-300 transition-colors">
           View leaderboard →
         </button>
       </div>
@@ -326,7 +329,6 @@ export default function TraderMathPage() {
     <main className="min-h-screen bg-zinc-950 text-zinc-100">
       <Navbar active="trader" />
       <div className="max-w-lg mx-auto px-6 py-10">
-        {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-1">
             {[1,2,3].map(i => (
@@ -343,14 +345,12 @@ export default function TraderMathPage() {
           </div>
         </div>
 
-        {/* Timer (hard mode only) */}
         {mode === 'hard' && question && (
           <div className="mb-6">
             <CountdownTimer key={timerKey} seconds={30} onExpire={handleTimerExpire} />
           </div>
         )}
 
-        {/* Question */}
         {question && (
           <div className={`bg-zinc-900 border rounded-xl p-8 mb-6 text-center transition-colors ${
             feedback === 'correct' ? 'border-emerald-500 bg-emerald-950/20' :
@@ -363,7 +363,6 @@ export default function TraderMathPage() {
           </div>
         )}
 
-        {/* Input */}
         {!feedback && (
           <div className="flex gap-3">
             <input
@@ -382,7 +381,6 @@ export default function TraderMathPage() {
           </div>
         )}
 
-        {/* Stats bar */}
         <div className="flex items-center justify-center gap-6 mt-6 text-[11px] font-mono text-zinc-600">
           <span>✓ {correct} correct</span>
           <span>✗ {wrong} wrong</span>
@@ -436,7 +434,7 @@ export default function TraderMathPage() {
             className="border border-zinc-700 hover:border-zinc-500 text-zinc-300 font-medium px-6 py-3 rounded-lg transition-colors text-[14px]">
             Try {mode === 'easy' ? 'Hard' : 'Easy'} mode
           </button>
-          <button onClick={() => loadLeaderboard()}
+          <button onClick={() => loadLeaderboard(mode, 0)}
             className="border border-zinc-700 hover:border-zinc-500 text-zinc-300 font-medium px-6 py-3 rounded-lg transition-colors text-[14px]">
             Leaderboard
           </button>
@@ -455,8 +453,8 @@ export default function TraderMathPage() {
           <h1 style={{fontFamily:'Georgia,serif'}} className="text-2xl font-bold text-white">Leaderboard</h1>
           <div className="flex gap-2">
             {(['easy','hard'] as Mode[]).map(m => (
-              <button key={m} onClick={() => { setMode(m); loadLeaderboard() }}
-                className={`text-[11px] font-mono px-3 py-1.5 rounded-md border transition-colors ${mode === m ? 'border-violet-500 text-violet-400 bg-violet-950/30' : 'border-zinc-700 text-zinc-400'}`}>
+              <button key={m} onClick={() => loadLeaderboard(m, 0)}
+                className={`text-[11px] font-mono px-3 py-1.5 rounded-md border transition-colors ${leaderboardMode === m ? 'border-violet-500 text-violet-400 bg-violet-950/30' : 'border-zinc-700 text-zinc-400'}`}>
                 {m}
               </button>
             ))}
@@ -466,22 +464,47 @@ export default function TraderMathPage() {
           {leaderboard.length === 0 && (
             <div className="text-center text-zinc-600 font-mono text-[13px] py-12">No scores yet — be the first!</div>
           )}
-          {leaderboard.map((entry, i) => (
-            <div key={entry.id} className="flex items-center gap-4 bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4">
-              <div className={`text-[13px] font-mono font-bold w-6 text-center ${i === 0 ? 'text-amber-400' : i === 1 ? 'text-zinc-300' : i === 2 ? 'text-amber-700' : 'text-zinc-600'}`}>
-                {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`}
+          {leaderboard.map((entry, i) => {
+            const rank = leaderboardPage * PER_PAGE + i + 1
+            return (
+              <div key={entry.id} className="flex items-center gap-4 bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4">
+                <div className={`text-[13px] font-mono font-bold w-8 text-center ${rank === 1 ? 'text-amber-400' : rank === 2 ? 'text-zinc-300' : rank === 3 ? 'text-amber-700' : 'text-zinc-600'}`}>
+                  {rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`}
+                </div>
+                <div className="flex-1">
+                  <div className="text-[13px] text-zinc-200 font-medium">@{entry.username}</div>
+                  <div className="text-[11px] font-mono text-zinc-600">{entry.correct} correct · {entry.avg_time_seconds}s avg</div>
+                </div>
+                <div style={{fontFamily:'Georgia,serif'}} className="text-xl font-bold text-white">{entry.score}</div>
               </div>
-              <div className="flex-1">
-                <div className="text-[13px] text-zinc-200 font-medium">@{entry.username}</div>
-                <div className="text-[11px] font-mono text-zinc-600">{entry.correct} correct · {entry.avg_time_seconds}s avg</div>
-              </div>
-              <div style={{fontFamily:'Georgia,serif'}} className="text-xl font-bold text-white">{entry.score}</div>
-            </div>
-          ))}
+            )
+          })}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-6">
+            <button
+              onClick={() => loadLeaderboard(leaderboardMode, leaderboardPage - 1)}
+              disabled={leaderboardPage === 0}
+              className="text-[11px] font-mono px-3 py-1.5 rounded-md border border-zinc-700 text-zinc-400 hover:border-zinc-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+              ← Prev
+            </button>
+            <span className="text-[11px] font-mono text-zinc-500">
+              Page {leaderboardPage + 1} of {totalPages}
+            </span>
+            <button
+              onClick={() => loadLeaderboard(leaderboardMode, leaderboardPage + 1)}
+              disabled={leaderboardPage >= totalPages - 1}
+              className="text-[11px] font-mono px-3 py-1.5 rounded-md border border-zinc-700 text-zinc-400 hover:border-zinc-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+              Next →
+            </button>
+          </div>
+        )}
+
         <div className="mt-8 text-center">
-          <button onClick={() => startGame(mode)} className="bg-violet-600 hover:bg-violet-700 text-white font-medium px-6 py-3 rounded-lg transition-colors text-[14px]">
-            Play {mode} mode →
+          <button onClick={() => startGame(leaderboardMode)} className="bg-violet-600 hover:bg-violet-700 text-white font-medium px-6 py-3 rounded-lg transition-colors text-[14px]">
+            Play {leaderboardMode} mode →
           </button>
         </div>
       </div>
