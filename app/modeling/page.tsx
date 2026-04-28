@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Navbar from '../components/Navbar'
 import HyperFormula from 'hyperformula'
 
@@ -24,7 +24,6 @@ type ModelScenario = {
   columnHeaders: string[]
 }
 
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
 function cellKey(r: number, c: number) { return `${r}-${c}` }
 
 function round(n: number, decimals = 1): number {
@@ -54,8 +53,9 @@ function generate3Statement(): ModelScenario {
   const debtBalance = pickRandom([50, 100, 150, 200, 250])
   const cashBalance = pickRandom([20, 30, 40, 50])
   const ppeStart = pickRandom([80, 100, 150, 200, 250])
+  const nwcStart = pickRandom([10, 15, 20, 25, 30])
 
-  // Calculate Year 1 expected values
+  // Income Statement
   const rev1 = round(revenue * (1 + revenueGrowth), 1)
   const ebitda1 = round(rev1 * ebitdaMargin, 1)
   const da1 = round(rev1 * daPercent, 1)
@@ -65,19 +65,37 @@ function generate3Statement(): ModelScenario {
   const taxes1 = round(ebt1 * taxRate, 1)
   const netIncome1 = round(ebt1 - taxes1, 1)
 
-  // Cash flow statement
+  // Cash Flow Statement
   const cfo1 = round(netIncome1 + da1 - nwcChange, 1)
   const capex1 = round(rev1 * capexPercent, 1)
   const fcf1 = round(cfo1 - capex1, 1)
 
-  // Balance sheet
+  // Balance Sheet
   const cashEnd = round(cashBalance + fcf1, 1)
+  const nwcEnd = round(nwcStart + nwcChange, 1)
   const ppeEnd = round(ppeStart - da1 + capex1, 1)
+  const totalAssets = round(cashEnd + nwcEnd + ppeEnd, 1)
   const retainedEarnings = round(netIncome1, 1)
+  const totalLE = round(debtBalance + retainedEarnings, 1)
 
-  // Grid layout: Row labels in col 0, Assumptions in col 1, Year 0 in col 2, Year 1 in col 3
+  // Verify balance: totalAssets should equal totalLE + nwcEnd adjustment
+  // Assets = Cash + NWC + PP&E
+  // L+E = Debt + RE
+  // This balances because:
+  //   Cash = CashStart + FCF = CashStart + (NI + D&A - dNWC - Capex)
+  //   NWC = NWCStart + dNWC
+  //   PP&E = PP&EStart - D&A + Capex
+  //   Total Assets = CashStart + FCF + NWCStart + dNWC + PP&EStart - D&A + Capex
+  //               = CashStart + NI + D&A - dNWC - Capex + NWCStart + dNWC + PP&EStart - D&A + Capex
+  //               = CashStart + NI + NWCStart + PP&EStart
+  //   Total L+E   = Debt + NI
+  //   So we need: CashStart + NWCStart + PP&EStart = Debt (for Y0 balance)
+  // To guarantee the BS balances, set Y0 equity = assets - debt
+  const y0TotalAssets = round(cashBalance + nwcStart + ppeStart, 1)
+  const y0Equity = round(y0TotalAssets - debtBalance, 1)
+
   const grid: (string | number | null)[][] = [
-    // Row 0: Header
+    // Row 0: IS Header
     ['INCOME STATEMENT', '', 'Year 0', 'Year 1'],
     // Row 1: Revenue
     ['Revenue', '', revenue, null],
@@ -87,133 +105,148 @@ function generate3Statement(): ModelScenario {
     ['EBITDA Margin %', '', '', `${(ebitdaMargin * 100).toFixed(0)}%`],
     // Row 4: EBITDA
     ['EBITDA', '', '', null],
-    // Row 5: D&A (% of Rev)
+    // Row 5: D&A % of Rev
     ['D&A (% of Revenue)', '', '', `${(daPercent * 100).toFixed(0)}%`],
     // Row 6: D&A
     ['D&A', '', '', null],
     // Row 7: EBIT
     ['EBIT', '', '', null],
-    // Row 8: Interest Expense
+    // Row 8: Interest Rate
+    ['Interest Rate', '', '', `${(interestRate * 100).toFixed(0)}%`],
+    // Row 9: Interest Expense
     ['Interest Expense', '', '', null],
-    // Row 9: EBT
+    // Row 10: EBT
     ['EBT (Pre-tax Income)', '', '', null],
-    // Row 10: Taxes
+    // Row 11: Tax Rate
+    ['Tax Rate', '', '', `${(taxRate * 100).toFixed(0)}%`],
+    // Row 12: Taxes
     ['Taxes', '', '', null],
-    // Row 11: Net Income
+    // Row 13: Net Income
     ['Net Income', '', '', null],
-    // Row 12: blank
+    // Row 14: blank
     ['', '', '', ''],
-    // Row 13: CFS Header
+    // Row 15: CFS Header
     ['CASH FLOW STATEMENT', '', '', 'Year 1'],
-    // Row 14: Net Income (link)
+    // Row 16: Net Income
     ['Net Income', '', '', null],
-    // Row 15: Add back D&A
+    // Row 17: Add back D&A
     ['(+) D&A', '', '', null],
-    // Row 16: Change in NWC
+    // Row 18: Change in NWC
     ['(-) Change in NWC', '', '', nwcChange],
-    // Row 17: Cash from Operations
+    // Row 19: Capex % of Rev
+    ['Capex (% of Revenue)', '', '', `${(capexPercent * 100).toFixed(0)}%`],
+    // Row 20: Cash from Operations
     ['Cash from Operations', '', '', null],
-    // Row 18: Capex
+    // Row 21: Capex
     ['(-) Capital Expenditures', '', '', null],
-    // Row 19: Free Cash Flow
+    // Row 22: Free Cash Flow
     ['Free Cash Flow', '', '', null],
-    // Row 20: blank
+    // Row 23: blank
     ['', '', '', ''],
-    // Row 21: BS Header
+    // Row 24: BS Header
     ['BALANCE SHEET', '', 'Year 0', 'Year 1'],
-    // Row 22: Cash
+    // Row 25: Cash
     ['Cash', '', cashBalance, null],
-    // Row 23: PP&E
+    // Row 26: Net Working Capital
+    ['Net Working Capital', '', nwcStart, null],
+    // Row 27: PP&E
     ['PP&E, net', '', ppeStart, null],
-    // Row 24: Total Assets (simplified)
-    ['Total Assets', '', round(cashBalance + ppeStart, 1), null],
-    // Row 25: Debt
+    // Row 28: Total Assets
+    ['Total Assets', '', y0TotalAssets, null],
+    // Row 29: blank separator
+    ['', '', '', ''],
+    // Row 30: Debt
     ['Debt', '', debtBalance, debtBalance],
-    // Row 26: Retained Earnings
-    ['Retained Earnings', '', 0, null],
-    // Row 27: Total L+E (simplified)
-    ['Total Liabilities + Equity', '', round(debtBalance, 1), null],
+    // Row 31: Beginning Equity
+    ['Beginning Equity', '', '', y0Equity],
+    // Row 32: Retained Earnings (= Net Income)
+    ['(+) Net Income (Retained)', '', '', null],
+    // Row 33: Total Equity
+    ['Total Equity', '', y0Equity, null],
+    // Row 34: Total L+E
+    ['Total Liabilities + Equity', '', y0TotalAssets, null],
+    // Row 35: blank
+    ['', '', '', ''],
+    // Row 36: Balance check
+    ['✓ Balance Check (Assets - L&E)', '', '', null],
   ]
 
   const editableCells = new Set<string>()
   const gradedCells: CellDef[] = []
 
-  // Year 1 Revenue (row 1, col 3)
+  // IS cells
   editableCells.add(cellKey(1, 3))
   gradedCells.push({ row: 1, col: 3, expected: rev1, label: 'Revenue Y1', explanation: `${revenue} × (1 + ${(revenueGrowth*100).toFixed(0)}%) = ${fmt(rev1)}` })
 
-  // EBITDA (row 4, col 3)
   editableCells.add(cellKey(4, 3))
   gradedCells.push({ row: 4, col: 3, expected: ebitda1, label: 'EBITDA', explanation: `${fmt(rev1)} × ${(ebitdaMargin*100).toFixed(0)}% = ${fmt(ebitda1)}` })
 
-  // D&A (row 6, col 3)
   editableCells.add(cellKey(6, 3))
   gradedCells.push({ row: 6, col: 3, expected: da1, label: 'D&A', explanation: `${fmt(rev1)} × ${(daPercent*100).toFixed(0)}% = ${fmt(da1)}` })
 
-  // EBIT (row 7, col 3)
   editableCells.add(cellKey(7, 3))
-  gradedCells.push({ row: 7, col: 3, expected: ebit1, label: 'EBIT', explanation: `${fmt(ebitda1)} - ${fmt(da1)} = ${fmt(ebit1)}` })
+  gradedCells.push({ row: 7, col: 3, expected: ebit1, label: 'EBIT', explanation: `EBITDA ${fmt(ebitda1)} - D&A ${fmt(da1)} = ${fmt(ebit1)}` })
 
-  // Interest Expense (row 8, col 3)
-  editableCells.add(cellKey(8, 3))
-  gradedCells.push({ row: 8, col: 3, expected: interestExp1, label: 'Interest Expense', explanation: `${debtBalance} × ${(interestRate*100).toFixed(0)}% = ${fmt(interestExp1)}` })
-
-  // EBT (row 9, col 3)
   editableCells.add(cellKey(9, 3))
-  gradedCells.push({ row: 9, col: 3, expected: ebt1, label: 'EBT', explanation: `${fmt(ebit1)} - ${fmt(interestExp1)} = ${fmt(ebt1)}` })
+  gradedCells.push({ row: 9, col: 3, expected: interestExp1, label: 'Interest Expense', explanation: `Debt ${debtBalance} × ${(interestRate*100).toFixed(0)}% = ${fmt(interestExp1)}` })
 
-  // Taxes (row 10, col 3)
   editableCells.add(cellKey(10, 3))
-  gradedCells.push({ row: 10, col: 3, expected: taxes1, label: 'Taxes', explanation: `${fmt(ebt1)} × ${(taxRate*100).toFixed(0)}% = ${fmt(taxes1)}` })
+  gradedCells.push({ row: 10, col: 3, expected: ebt1, label: 'EBT', explanation: `EBIT ${fmt(ebit1)} - Interest ${fmt(interestExp1)} = ${fmt(ebt1)}` })
 
-  // Net Income (row 11, col 3)
-  editableCells.add(cellKey(11, 3))
-  gradedCells.push({ row: 11, col: 3, expected: netIncome1, label: 'Net Income', explanation: `${fmt(ebt1)} - ${fmt(taxes1)} = ${fmt(netIncome1)}` })
+  editableCells.add(cellKey(12, 3))
+  gradedCells.push({ row: 12, col: 3, expected: taxes1, label: 'Taxes', explanation: `EBT ${fmt(ebt1)} × ${(taxRate*100).toFixed(0)}% = ${fmt(taxes1)}` })
 
-  // CFS: Net Income (row 14, col 3)
-  editableCells.add(cellKey(14, 3))
-  gradedCells.push({ row: 14, col: 3, expected: netIncome1, label: 'CFS Net Income', explanation: `Links from Income Statement = ${fmt(netIncome1)}` })
+  editableCells.add(cellKey(13, 3))
+  gradedCells.push({ row: 13, col: 3, expected: netIncome1, label: 'Net Income', explanation: `EBT ${fmt(ebt1)} - Taxes ${fmt(taxes1)} = ${fmt(netIncome1)}` })
 
-  // CFS: D&A (row 15, col 3)
-  editableCells.add(cellKey(15, 3))
-  gradedCells.push({ row: 15, col: 3, expected: da1, label: 'CFS D&A Add-back', explanation: `Non-cash charge added back = ${fmt(da1)}` })
+  // CFS cells
+  editableCells.add(cellKey(16, 3))
+  gradedCells.push({ row: 16, col: 3, expected: netIncome1, label: 'CFS: Net Income', explanation: `Links from Income Statement = ${fmt(netIncome1)}` })
 
-  // CFO (row 17, col 3)
   editableCells.add(cellKey(17, 3))
-  gradedCells.push({ row: 17, col: 3, expected: cfo1, label: 'Cash from Operations', explanation: `${fmt(netIncome1)} + ${fmt(da1)} - ${nwcChange} = ${fmt(cfo1)}` })
+  gradedCells.push({ row: 17, col: 3, expected: da1, label: 'CFS: D&A Add-back', explanation: `Non-cash charge added back = ${fmt(da1)}` })
 
-  // Capex (row 18, col 3)
-  editableCells.add(cellKey(18, 3))
-  gradedCells.push({ row: 18, col: 3, expected: capex1, label: 'Capex', explanation: `${fmt(rev1)} × ${(capexPercent*100).toFixed(0)}% = ${fmt(capex1)}` })
+  editableCells.add(cellKey(20, 3))
+  gradedCells.push({ row: 20, col: 3, expected: cfo1, label: 'Cash from Operations', explanation: `NI ${fmt(netIncome1)} + D&A ${fmt(da1)} - ΔNWC ${nwcChange} = ${fmt(cfo1)}` })
 
-  // FCF (row 19, col 3)
-  editableCells.add(cellKey(19, 3))
-  gradedCells.push({ row: 19, col: 3, expected: fcf1, label: 'Free Cash Flow', explanation: `${fmt(cfo1)} - ${fmt(capex1)} = ${fmt(fcf1)}` })
+  editableCells.add(cellKey(21, 3))
+  gradedCells.push({ row: 21, col: 3, expected: capex1, label: 'Capital Expenditures', explanation: `Revenue ${fmt(rev1)} × ${(capexPercent*100).toFixed(0)}% = ${fmt(capex1)}` })
 
-  // BS: Cash (row 22, col 3)
   editableCells.add(cellKey(22, 3))
-  gradedCells.push({ row: 22, col: 3, expected: cashEnd, label: 'Cash Y1', explanation: `${cashBalance} + ${fmt(fcf1)} = ${fmt(cashEnd)}` })
+  gradedCells.push({ row: 22, col: 3, expected: fcf1, label: 'Free Cash Flow', explanation: `CFO ${fmt(cfo1)} - Capex ${fmt(capex1)} = ${fmt(fcf1)}` })
 
-  // BS: PP&E (row 23, col 3)
-  editableCells.add(cellKey(23, 3))
-  gradedCells.push({ row: 23, col: 3, expected: ppeEnd, label: 'PP&E Y1', explanation: `${ppeStart} - ${fmt(da1)} + ${fmt(capex1)} = ${fmt(ppeEnd)}` })
+  // BS cells
+  editableCells.add(cellKey(25, 3))
+  gradedCells.push({ row: 25, col: 3, expected: cashEnd, label: 'Cash Y1', explanation: `Beginning ${cashBalance} + FCF ${fmt(fcf1)} = ${fmt(cashEnd)}` })
 
-  // BS: Total Assets (row 24, col 3)
-  editableCells.add(cellKey(24, 3))
-  gradedCells.push({ row: 24, col: 3, expected: round(cashEnd + ppeEnd, 1), label: 'Total Assets Y1', explanation: `${fmt(cashEnd)} + ${fmt(ppeEnd)} = ${fmt(round(cashEnd + ppeEnd, 1))}` })
-
-  // BS: Retained Earnings (row 26, col 3)
   editableCells.add(cellKey(26, 3))
-  gradedCells.push({ row: 26, col: 3, expected: retainedEarnings, label: 'Retained Earnings', explanation: `Net Income = ${fmt(retainedEarnings)}` })
+  gradedCells.push({ row: 26, col: 3, expected: nwcEnd, label: 'Net Working Capital Y1', explanation: `Beginning NWC ${nwcStart} + ΔNWC ${nwcChange} = ${fmt(nwcEnd)}` })
 
-  // BS: Total L+E (row 27, col 3)
   editableCells.add(cellKey(27, 3))
-  gradedCells.push({ row: 27, col: 3, expected: round(debtBalance + retainedEarnings, 1), label: 'Total L+E', explanation: `${debtBalance} + ${fmt(retainedEarnings)} = ${fmt(round(debtBalance + retainedEarnings, 1))}` })
+  gradedCells.push({ row: 27, col: 3, expected: ppeEnd, label: 'PP&E Y1', explanation: `Beginning ${ppeStart} - D&A ${fmt(da1)} + Capex ${fmt(capex1)} = ${fmt(ppeEnd)}` })
+
+  editableCells.add(cellKey(28, 3))
+  gradedCells.push({ row: 28, col: 3, expected: round(cashEnd + nwcEnd + ppeEnd, 1), label: 'Total Assets Y1', explanation: `Cash ${fmt(cashEnd)} + NWC ${fmt(nwcEnd)} + PP&E ${fmt(ppeEnd)} = ${fmt(round(cashEnd + nwcEnd + ppeEnd, 1))}` })
+
+  const totalEquityEnd = round(y0Equity + netIncome1, 1)
+  const totalLEEnd = round(debtBalance + totalEquityEnd, 1)
+
+  editableCells.add(cellKey(32, 3))
+  gradedCells.push({ row: 32, col: 3, expected: netIncome1, label: 'Retained Earnings (Net Income)', explanation: `Net Income flows to equity = ${fmt(netIncome1)}` })
+
+  editableCells.add(cellKey(33, 3))
+  gradedCells.push({ row: 33, col: 3, expected: totalEquityEnd, label: 'Total Equity Y1', explanation: `Beginning Equity ${fmt(y0Equity)} + Net Income ${fmt(netIncome1)} = ${fmt(totalEquityEnd)}` })
+
+  editableCells.add(cellKey(34, 3))
+  gradedCells.push({ row: 34, col: 3, expected: totalLEEnd, label: 'Total L+E Y1', explanation: `Debt ${debtBalance} + Total Equity ${fmt(totalEquityEnd)} = ${fmt(totalLEEnd)}` })
+
+  editableCells.add(cellKey(36, 3))
+  gradedCells.push({ row: 36, col: 3, expected: 0, label: 'Balance Check', explanation: `Total Assets ${fmt(round(cashEnd + nwcEnd + ppeEnd, 1))} - Total L+E ${fmt(totalLEEnd)} = 0 (balanced!)` })
 
   return {
     type: '3-statement',
     title: '3-Statement Model',
-    assumptions: { revenue, revenueGrowth, ebitdaMargin, daPercent, taxRate, capexPercent, nwcChange, interestRate, debtBalance, cashBalance, ppeStart },
+    assumptions: { revenue, revenueGrowth, ebitdaMargin, daPercent, taxRate, capexPercent, nwcChange, interestRate, debtBalance, cashBalance, ppeStart, nwcStart },
     grid,
     editableCells,
     gradedCells,
@@ -233,13 +266,11 @@ function generateLBO(): ModelScenario {
   const capexPercent = pickRandom([3, 4, 5]) / 100
   const daPercent = pickRandom([3, 4, 5]) / 100
 
-  // Entry
   const entryEV = ebitda * entryMultiple
   const entryDebt = round(entryEV * debtPercent, 1)
   const entryEquity = round(entryEV - entryDebt, 1)
 
-  // 5-year projection
-  const years: { ebitda: number; da: number; ebit: number; interest: number; ebt: number; taxes: number; ni: number; fcf: number; debtEnd: number }[] = []
+  const years: { ebitda: number; da: number; ebit: number; interest: number; ebt: number; taxes: number; ni: number; capex: number; fcf: number; debtEnd: number }[] = []
   let currentDebt = entryDebt
 
   for (let y = 1; y <= 5; y++) {
@@ -253,11 +284,10 @@ function generateLBO(): ModelScenario {
     const yCapex = round(yEbitda * capexPercent, 1)
     const yFcf = round(yNi + yDa - yCapex, 1)
     const yDebtEnd = round(currentDebt - yFcf, 1)
-    years.push({ ebitda: yEbitda, da: yDa, ebit: yEbit, interest: yInterest, ebt: yEbt, taxes: yTaxes, ni: yNi, fcf: yFcf, debtEnd: yDebtEnd })
+    years.push({ ebitda: yEbitda, da: yDa, ebit: yEbit, interest: yInterest, ebt: yEbt, taxes: yTaxes, ni: yNi, capex: yCapex, fcf: yFcf, debtEnd: yDebtEnd })
     currentDebt = yDebtEnd
   }
 
-  // Exit
   const exitEbitda = years[4].ebitda
   const exitEV = round(exitEbitda * exitMultiple, 1)
   const exitDebt = years[4].debtEnd
@@ -266,115 +296,127 @@ function generateLBO(): ModelScenario {
   const irr = round((Math.pow(exitEquity / entryEquity, 1/5) - 1) * 100, 1)
 
   const grid: (string | number | null)[][] = [
-    // Row 0: Header
     ['LBO MODEL', '', 'Entry', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Exit'],
-    // Row 1: EBITDA
     ['EBITDA', '', ebitda, null, null, null, null, null, null],
-    // Row 2: Growth
     ['EBITDA Growth %', '', '', `${(ebitdaGrowth*100).toFixed(0)}%`, `${(ebitdaGrowth*100).toFixed(0)}%`, `${(ebitdaGrowth*100).toFixed(0)}%`, `${(ebitdaGrowth*100).toFixed(0)}%`, `${(ebitdaGrowth*100).toFixed(0)}%`, ''],
-    // Row 3: blank
+    ['D&A (% of EBITDA)', '', '', `${(daPercent*100).toFixed(0)}%`, `${(daPercent*100).toFixed(0)}%`, `${(daPercent*100).toFixed(0)}%`, `${(daPercent*100).toFixed(0)}%`, `${(daPercent*100).toFixed(0)}%`, ''],
+    ['Capex (% of EBITDA)', '', '', `${(capexPercent*100).toFixed(0)}%`, `${(capexPercent*100).toFixed(0)}%`, `${(capexPercent*100).toFixed(0)}%`, `${(capexPercent*100).toFixed(0)}%`, `${(capexPercent*100).toFixed(0)}%`, ''],
+    ['Tax Rate', '', '', `${(taxRate*100).toFixed(0)}%`, `${(taxRate*100).toFixed(0)}%`, `${(taxRate*100).toFixed(0)}%`, `${(taxRate*100).toFixed(0)}%`, `${(taxRate*100).toFixed(0)}%`, ''],
     ['', '', '', '', '', '', '', '', ''],
-    // Row 4: Entry/Exit
+    ['TRANSACTION', '', '', '', '', '', '', '', ''],
     ['Entry Multiple', '', `${entryMultiple}x`, '', '', '', '', '', ''],
-    // Row 5: Exit Multiple
     ['Exit Multiple', '', '', '', '', '', '', '', `${exitMultiple}x`],
-    // Row 6: Enterprise Value
     ['Enterprise Value', '', null, '', '', '', '', '', null],
-    // Row 7: blank
-    ['', '', '', '', '', '', '', '', ''],
-    // Row 8: Debt structure
-    ['DEBT SCHEDULE', '', 'Entry', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', ''],
-    // Row 9: Debt % 
     ['Debt %', '', `${(debtPercent*100).toFixed(0)}%`, '', '', '', '', '', ''],
-    // Row 10: Beginning Debt
-    ['Beginning Debt', '', null, null, null, null, null, null, ''],
-    // Row 11: Interest Rate
-    ['Interest Rate', '', `${(interestRate*100).toFixed(0)}%`, `${(interestRate*100).toFixed(0)}%`, `${(interestRate*100).toFixed(0)}%`, `${(interestRate*100).toFixed(0)}%`, `${(interestRate*100).toFixed(0)}%`, `${(interestRate*100).toFixed(0)}%`, ''],
-    // Row 12: Interest Expense
-    ['Interest Expense', '', '', null, null, null, null, null, ''],
-    // Row 13: FCF (for debt paydown)
-    ['Free Cash Flow', '', '', null, null, null, null, null, ''],
-    // Row 14: Ending Debt
-    ['Ending Debt', '', '', null, null, null, null, null, ''],
-    // Row 15: blank
-    ['', '', '', '', '', '', '', '', ''],
-    // Row 16: Returns
-    ['RETURNS', '', '', '', '', '', '', '', ''],
-    // Row 17: Entry Equity
+    ['Entry Debt', '', null, '', '', '', '', '', ''],
     ['Entry Equity', '', null, '', '', '', '', '', ''],
-    // Row 18: Exit EV
+    ['', '', '', '', '', '', '', '', ''],
+    ['INCOME STATEMENT', '', '', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', ''],
+    ['EBITDA', '', '', null, null, null, null, null, ''],
+    ['(-) D&A', '', '', null, null, null, null, null, ''],
+    ['EBIT', '', '', null, null, null, null, null, ''],
+    ['(-) Interest Expense', '', '', null, null, null, null, null, ''],
+    ['EBT', '', '', null, null, null, null, null, ''],
+    ['(-) Taxes', '', '', null, null, null, null, null, ''],
+    ['Net Income', '', '', null, null, null, null, null, ''],
+    ['', '', '', '', '', '', '', '', ''],
+    ['DEBT SCHEDULE', '', '', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', ''],
+    ['Beginning Debt', '', '', null, null, null, null, null, ''],
+    ['Interest Rate', '', '', `${(interestRate*100).toFixed(0)}%`, `${(interestRate*100).toFixed(0)}%`, `${(interestRate*100).toFixed(0)}%`, `${(interestRate*100).toFixed(0)}%`, `${(interestRate*100).toFixed(0)}%`, ''],
+    ['(-) FCF (Debt Paydown)', '', '', null, null, null, null, null, ''],
+    ['Ending Debt', '', '', null, null, null, null, null, ''],
+    ['', '', '', '', '', '', '', '', ''],
+    ['RETURNS', '', '', '', '', '', '', '', 'Exit'],
+    ['Exit EBITDA', '', '', '', '', '', '', '', null],
     ['Exit Enterprise Value', '', '', '', '', '', '', '', null],
-    // Row 19: Exit Debt
     ['(-) Remaining Debt', '', '', '', '', '', '', '', null],
-    // Row 20: Exit Equity
     ['Exit Equity', '', '', '', '', '', '', '', null],
-    // Row 21: MOIC
     ['MOIC', '', '', '', '', '', '', '', null],
-    // Row 22: IRR
     ['IRR %', '', '', '', '', '', '', '', null],
   ]
 
   const editableCells = new Set<string>()
   const gradedCells: CellDef[] = []
 
-  // Entry EV (row 6, col 2)
-  editableCells.add(cellKey(6, 2))
-  gradedCells.push({ row: 6, col: 2, expected: entryEV, label: 'Entry EV', explanation: `${ebitda} × ${entryMultiple}x = ${entryEV}` })
-
-  // Entry Debt (row 10, col 2)
+  // Transaction
   editableCells.add(cellKey(10, 2))
-  gradedCells.push({ row: 10, col: 2, expected: entryDebt, label: 'Entry Debt', explanation: `${entryEV} × ${(debtPercent*100).toFixed(0)}% = ${fmt(entryDebt)}` })
+  gradedCells.push({ row: 10, col: 2, expected: entryEV, label: 'Entry EV', explanation: `EBITDA ${ebitda} × ${entryMultiple}x = ${entryEV}` })
 
-  // Entry Equity (row 17, col 2)
-  editableCells.add(cellKey(17, 2))
-  gradedCells.push({ row: 17, col: 2, expected: entryEquity, label: 'Entry Equity', explanation: `${entryEV} - ${fmt(entryDebt)} = ${fmt(entryEquity)}` })
+  editableCells.add(cellKey(12, 2))
+  gradedCells.push({ row: 12, col: 2, expected: entryDebt, label: 'Entry Debt', explanation: `EV ${entryEV} × ${(debtPercent*100).toFixed(0)}% = ${fmt(entryDebt)}` })
 
-  // Year 1-5 EBITDA, Interest, FCF, Ending Debt
+  editableCells.add(cellKey(13, 2))
+  gradedCells.push({ row: 13, col: 2, expected: entryEquity, label: 'Entry Equity', explanation: `EV ${entryEV} - Debt ${fmt(entryDebt)} = ${fmt(entryEquity)}` })
+
+  // Income Statement + Debt Schedule per year
   for (let y = 0; y < 5; y++) {
     const col = y + 3
+    const yr = years[y]
+    const prevDebt = y === 0 ? entryDebt : years[y-1].debtEnd
+    const prevEbitda = y === 0 ? ebitda : years[y-1].ebitda
 
-    // EBITDA
-    editableCells.add(cellKey(1, col))
-    gradedCells.push({ row: 1, col, expected: years[y].ebitda, label: `Y${y+1} EBITDA`, explanation: `${y === 0 ? ebitda : fmt(years[y-1].ebitda)} × (1 + ${(ebitdaGrowth*100).toFixed(0)}%) = ${fmt(years[y].ebitda)}` })
+    // IS: EBITDA
+    editableCells.add(cellKey(16, col))
+    gradedCells.push({ row: 16, col, expected: yr.ebitda, label: `Y${y+1} EBITDA`, explanation: `${fmt(prevEbitda)} × (1 + ${(ebitdaGrowth*100).toFixed(0)}%) = ${fmt(yr.ebitda)}` })
 
-    // Beginning Debt (Y1 = entry debt, Y2+ = prior ending)
-    editableCells.add(cellKey(10, col))
-    gradedCells.push({ row: 10, col, expected: y === 0 ? entryDebt : years[y-1].debtEnd, label: `Y${y+1} Beginning Debt`, explanation: y === 0 ? `Entry debt = ${fmt(entryDebt)}` : `Prior year ending debt = ${fmt(years[y-1].debtEnd)}` })
+    // IS: D&A
+    editableCells.add(cellKey(17, col))
+    gradedCells.push({ row: 17, col, expected: yr.da, label: `Y${y+1} D&A`, explanation: `EBITDA ${fmt(yr.ebitda)} × ${(daPercent*100).toFixed(0)}% = ${fmt(yr.da)}` })
 
-    // Interest Expense
-    editableCells.add(cellKey(12, col))
-    gradedCells.push({ row: 12, col, expected: years[y].interest, label: `Y${y+1} Interest`, explanation: `${y === 0 ? fmt(entryDebt) : fmt(years[y-1].debtEnd)} × ${(interestRate*100).toFixed(0)}% = ${fmt(years[y].interest)}` })
+    // IS: EBIT
+    editableCells.add(cellKey(18, col))
+    gradedCells.push({ row: 18, col, expected: yr.ebit, label: `Y${y+1} EBIT`, explanation: `EBITDA ${fmt(yr.ebitda)} - D&A ${fmt(yr.da)} = ${fmt(yr.ebit)}` })
 
-    // FCF
-    editableCells.add(cellKey(13, col))
-    gradedCells.push({ row: 13, col, expected: years[y].fcf, label: `Y${y+1} FCF`, explanation: `NI ${fmt(years[y].ni)} + D&A ${fmt(years[y].da)} - Capex ${fmt(round(years[y].ebitda * capexPercent, 1))} = ${fmt(years[y].fcf)}` })
+    // IS: Interest
+    editableCells.add(cellKey(19, col))
+    gradedCells.push({ row: 19, col, expected: yr.interest, label: `Y${y+1} Interest`, explanation: `Beg Debt ${fmt(prevDebt)} × ${(interestRate*100).toFixed(0)}% = ${fmt(yr.interest)}` })
 
-    // Ending Debt
-    editableCells.add(cellKey(14, col))
-    gradedCells.push({ row: 14, col, expected: years[y].debtEnd, label: `Y${y+1} Ending Debt`, explanation: `${y === 0 ? fmt(entryDebt) : fmt(years[y-1].debtEnd)} - ${fmt(years[y].fcf)} = ${fmt(years[y].debtEnd)}` })
+    // IS: EBT
+    editableCells.add(cellKey(20, col))
+    gradedCells.push({ row: 20, col, expected: yr.ebt, label: `Y${y+1} EBT`, explanation: `EBIT ${fmt(yr.ebit)} - Interest ${fmt(yr.interest)} = ${fmt(yr.ebt)}` })
+
+    // IS: Taxes
+    editableCells.add(cellKey(21, col))
+    gradedCells.push({ row: 21, col, expected: yr.taxes, label: `Y${y+1} Taxes`, explanation: `EBT ${fmt(yr.ebt)} × ${(taxRate*100).toFixed(0)}% = ${fmt(yr.taxes)}` })
+
+    // IS: Net Income
+    editableCells.add(cellKey(22, col))
+    gradedCells.push({ row: 22, col, expected: yr.ni, label: `Y${y+1} Net Income`, explanation: `EBT ${fmt(yr.ebt)} - Taxes ${fmt(yr.taxes)} = ${fmt(yr.ni)}` })
+
+    // Debt: Beginning
+    editableCells.add(cellKey(25, col))
+    gradedCells.push({ row: 25, col, expected: prevDebt, label: `Y${y+1} Beg Debt`, explanation: y === 0 ? `Entry debt = ${fmt(entryDebt)}` : `Prior ending debt = ${fmt(prevDebt)}` })
+
+    // Debt: FCF (paydown)
+    editableCells.add(cellKey(27, col))
+    gradedCells.push({ row: 27, col, expected: yr.fcf, label: `Y${y+1} FCF`, explanation: `NI ${fmt(yr.ni)} + D&A ${fmt(yr.da)} - Capex ${fmt(yr.capex)} = ${fmt(yr.fcf)}` })
+
+    // Debt: Ending
+    editableCells.add(cellKey(28, col))
+    gradedCells.push({ row: 28, col, expected: yr.debtEnd, label: `Y${y+1} End Debt`, explanation: `Beg ${fmt(prevDebt)} - FCF ${fmt(yr.fcf)} = ${fmt(yr.debtEnd)}` })
   }
 
-  // Exit calculations
-  editableCells.add(cellKey(1, 8))
-  gradedCells.push({ row: 1, col: 8, expected: exitEbitda, label: 'Exit EBITDA', explanation: `Year 5 EBITDA = ${fmt(exitEbitda)}` })
+  // Exit / Returns
+  editableCells.add(cellKey(31, 8))
+  gradedCells.push({ row: 31, col: 8, expected: exitEbitda, label: 'Exit EBITDA', explanation: `Year 5 EBITDA = ${fmt(exitEbitda)}` })
 
-  editableCells.add(cellKey(6, 8))
-  gradedCells.push({ row: 6, col: 8, expected: exitEV, label: 'Exit EV', explanation: `${fmt(exitEbitda)} × ${exitMultiple}x = ${fmt(exitEV)}` })
+  editableCells.add(cellKey(10, 8))
+  gradedCells.push({ row: 10, col: 8, expected: exitEV, label: 'Exit EV (top)', explanation: `${fmt(exitEbitda)} × ${exitMultiple}x = ${fmt(exitEV)}` })
 
-  editableCells.add(cellKey(18, 8))
-  gradedCells.push({ row: 18, col: 8, expected: exitEV, label: 'Exit EV (returns)', explanation: `= ${fmt(exitEV)}` })
+  editableCells.add(cellKey(32, 8))
+  gradedCells.push({ row: 32, col: 8, expected: exitEV, label: 'Exit EV', explanation: `${fmt(exitEbitda)} × ${exitMultiple}x = ${fmt(exitEV)}` })
 
-  editableCells.add(cellKey(19, 8))
-  gradedCells.push({ row: 19, col: 8, expected: exitDebt, label: 'Remaining Debt', explanation: `Year 5 ending debt = ${fmt(exitDebt)}` })
+  editableCells.add(cellKey(33, 8))
+  gradedCells.push({ row: 33, col: 8, expected: exitDebt, label: 'Remaining Debt', explanation: `Year 5 ending debt = ${fmt(exitDebt)}` })
 
-  editableCells.add(cellKey(20, 8))
-  gradedCells.push({ row: 20, col: 8, expected: exitEquity, label: 'Exit Equity', explanation: `${fmt(exitEV)} - ${fmt(exitDebt)} = ${fmt(exitEquity)}` })
+  editableCells.add(cellKey(34, 8))
+  gradedCells.push({ row: 34, col: 8, expected: exitEquity, label: 'Exit Equity', explanation: `Exit EV ${fmt(exitEV)} - Debt ${fmt(exitDebt)} = ${fmt(exitEquity)}` })
 
-  editableCells.add(cellKey(21, 8))
-  gradedCells.push({ row: 21, col: 8, expected: moic, label: 'MOIC', explanation: `${fmt(exitEquity)} ÷ ${fmt(entryEquity)} = ${moic}x` })
+  editableCells.add(cellKey(35, 8))
+  gradedCells.push({ row: 35, col: 8, expected: moic, label: 'MOIC', explanation: `Exit Equity ${fmt(exitEquity)} ÷ Entry Equity ${fmt(entryEquity)} = ${moic}x` })
 
-  editableCells.add(cellKey(22, 8))
-  gradedCells.push({ row: 22, col: 8, expected: irr, label: 'IRR', explanation: `(${moic}x)^(1/5) - 1 = ${irr}%` })
+  editableCells.add(cellKey(36, 8))
+  gradedCells.push({ row: 36, col: 8, expected: irr, label: 'IRR %', explanation: `(${moic}x)^(1/5) - 1 = ${irr}%` })
 
   return {
     type: 'lbo',
@@ -459,16 +501,20 @@ function Spreadsheet({ scenario, onGrade }: { scenario: ModelScenario; onGrade: 
 
   const isHeaderRow = (r: number) => {
     const val = scenario.grid[r]?.[0]
-    return typeof val === 'string' && (val.includes('INCOME') || val.includes('CASH FLOW') || val.includes('BALANCE') || val.includes('LBO') || val.includes('DEBT') || val.includes('RETURNS'))
+    return typeof val === 'string' && (val.includes('INCOME') || val.includes('CASH FLOW') || val.includes('BALANCE') || val.includes('LBO') || val.includes('DEBT') || val.includes('RETURNS') || val.includes('TRANSACTION'))
   }
 
   const isBlankRow = (r: number) => {
     return scenario.grid[r]?.every(c => c === '' || c === null)
   }
 
+  const isCheckRow = (r: number) => {
+    const val = scenario.grid[r]?.[0]
+    return typeof val === 'string' && val.includes('✓')
+  }
+
   return (
     <div>
-      {/* Assumptions box */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 mb-6">
         <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 mb-3">Given Assumptions</div>
         <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -481,14 +527,13 @@ function Spreadsheet({ scenario, onGrade }: { scenario: ModelScenario; onGrade: 
         </div>
       </div>
 
-      {/* Spreadsheet grid */}
       <div className="overflow-x-auto mb-6">
         <table className="w-full border-collapse font-mono text-[12px]">
           <tbody>
             {scenario.grid.map((row, r) => {
               if (isBlankRow(r)) return <tr key={r}><td colSpan={row.length} className="h-4" /></tr>
               return (
-                <tr key={r} className={isHeaderRow(r) ? 'bg-zinc-800/50' : ''}>
+                <tr key={r} className={isHeaderRow(r) ? 'bg-zinc-800/50' : isCheckRow(r) ? 'bg-emerald-950/20' : ''}>
                   {row.map((cell, c) => {
                     const key = cellKey(r, c)
                     const isEditable = scenario.editableCells.has(key)
@@ -497,7 +542,7 @@ function Spreadsheet({ scenario, onGrade }: { scenario: ModelScenario; onGrade: 
 
                     if (isSection && c === 0) {
                       return (
-                        <td key={c} colSpan={1} className="px-3 py-2 text-[11px] font-bold text-violet-400 uppercase tracking-wider">
+                        <td key={c} className="px-3 py-2 text-[11px] font-bold text-violet-400 uppercase tracking-wider">
                           {cell}
                         </td>
                       )
@@ -522,7 +567,7 @@ function Spreadsheet({ scenario, onGrade }: { scenario: ModelScenario; onGrade: 
                     }
 
                     return (
-                      <td key={c} className={`px-3 py-1.5 ${isHeader ? 'text-left text-zinc-400' : 'text-right text-zinc-300'} ${isSection ? 'font-bold' : ''} whitespace-nowrap`}>
+                      <td key={c} className={`px-3 py-1.5 ${isHeader ? 'text-left text-zinc-400' : 'text-right text-zinc-300'} ${isSection ? 'font-bold' : ''} ${isCheckRow(r) && c === 0 ? 'text-emerald-400' : ''} whitespace-nowrap`}>
                         {cell !== null && cell !== undefined ? String(cell) : ''}
                       </td>
                     )
@@ -580,7 +625,6 @@ function ResultsView({ results, scenario, onRetry, onNewScenario }: {
         </div>
       </div>
 
-      {/* Correct cells */}
       {results.filter(r => r.correct).length > 0 && (
         <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
           <div className="text-[11px] font-mono uppercase tracking-wider text-emerald-400 mb-3">✓ Correct ({results.filter(r => r.correct).length})</div>
@@ -595,7 +639,6 @@ function ResultsView({ results, scenario, onRetry, onNewScenario }: {
         </div>
       )}
 
-      {/* Wrong cells */}
       {results.filter(r => !r.correct).length > 0 && (
         <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
           <div className="text-[11px] font-mono uppercase tracking-wider text-red-400 mb-3">✗ Incorrect ({results.filter(r => !r.correct).length})</div>
@@ -648,7 +691,6 @@ export default function ModelingPage() {
     startModel(modelType)
   }
 
-  // ── HOME ──────────────────────────────────────────────────────────────────
   if (screen === 'home') return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100">
       <Navbar active="modeling" />
@@ -667,10 +709,10 @@ export default function ModelingPage() {
             <div className="text-2xl mb-3">📊</div>
             <div style={{fontFamily:'Georgia,serif'}} className="text-white font-bold text-lg mb-2">3-Statement Model</div>
             <div className="text-zinc-400 text-[12px] leading-relaxed mb-4">
-              Build an Income Statement, Cash Flow Statement, and Balance Sheet from given assumptions. Link all three statements together.
+              Build a linked Income Statement, Cash Flow Statement, and Balance Sheet. Includes NWC, D&A, and balance check.
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono text-blue-400 bg-blue-950/30 border border-blue-800 rounded px-2 py-0.5">20 cells</span>
+              <span className="text-[10px] font-mono text-blue-400 bg-blue-950/30 border border-blue-800 rounded px-2 py-0.5">22 cells</span>
               <span className="text-[10px] font-mono text-zinc-500">~15 min</span>
             </div>
           </div>
@@ -680,10 +722,10 @@ export default function ModelingPage() {
             <div className="text-2xl mb-3">🏦</div>
             <div style={{fontFamily:'Georgia,serif'}} className="text-white font-bold text-lg mb-2">Paper LBO</div>
             <div className="text-zinc-400 text-[12px] leading-relaxed mb-4">
-              Build a 5-year LBO model with debt schedule, FCF projections, and returns analysis. Calculate MOIC and IRR.
+              Build a 5-year LBO with full income statement, debt schedule, and returns. Calculate MOIC and IRR.
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono text-violet-400 bg-violet-950/30 border border-violet-800 rounded px-2 py-0.5">30+ cells</span>
+              <span className="text-[10px] font-mono text-violet-400 bg-violet-950/30 border border-violet-800 rounded px-2 py-0.5">40+ cells</span>
               <span className="text-[10px] font-mono text-zinc-500">~20 min</span>
             </div>
           </div>
@@ -691,14 +733,13 @@ export default function ModelingPage() {
 
         <div className="mt-8 text-center">
           <div className="text-[11px] font-mono text-zinc-600">
-            Supports formulas like =B2*1.1 and =SUM(B2:B6) · Numbers randomized each attempt
+            Supports formulas like =100*1.1 · Numbers randomized each attempt · Balance sheet must balance
           </div>
         </div>
       </div>
     </main>
   )
 
-  // ── MODELING ──────────────────────────────────────────────────────────────
   if (screen === 'modeling' && scenario) return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100">
       <Navbar active="modeling" />
@@ -711,14 +752,13 @@ export default function ModelingPage() {
           </span>
         </div>
         <div className="text-[12px] text-zinc-400 mb-6">
-          Fill in the empty cells. You can type numbers directly or use formulas (e.g. =100*1.1). All amounts in $M.
+          Fill in the empty cells using numbers or formulas (e.g. =100*1.1). All amounts in $M. The balance sheet must balance.
         </div>
         <Spreadsheet scenario={scenario} onGrade={handleGrade} />
       </div>
     </main>
   )
 
-  // ── RESULTS ───────────────────────────────────────────────────────────────
   if (screen === 'results' && scenario && results) return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100">
       <Navbar active="modeling" />
