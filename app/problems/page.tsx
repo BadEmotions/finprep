@@ -23,12 +23,13 @@ type Question = {
 type RubricResult = { item: string; hit: boolean; bullet: string; weight: number }
 type GradeResult = { score: number; maxScore: number; results: RubricResult[] }
 
-const catLabel: Record<string, string> = { ib: 'Investment Banking', pe: 'Private Equity', hf: 'Hedge Fund', st: 'Sales & Trading', general: 'General' }
+const catLabel: Record<string, string> = { ib: 'Investment Banking', pe: 'Private Equity', hf: 'Hedge Fund', st: 'Sales & Trading', behavioral: 'Behavioral', general: 'General' }
 const catColor: Record<string, string> = {
   ib: 'text-blue-400 bg-blue-950/30 border-blue-800',
   pe: 'text-violet-400 bg-violet-950/30 border-violet-800',
   hf: 'text-amber-400 bg-amber-950/30 border-amber-800',
   st: 'text-emerald-400 bg-emerald-950/30 border-emerald-800',
+  behavioral: 'text-rose-400 bg-rose-950/30 border-rose-800',
   general: 'text-zinc-400 bg-zinc-900 border-zinc-700',
 }
 const diffColor: Record<string, string> = {
@@ -208,7 +209,7 @@ function SolvePage({ q, onBack, onSolved, userId, onNext, questions }: {
 }
 
 const DIFFICULTIES = ['easy', 'medium', 'hard']
-const CATEGORIES = ['ib', 'pe', 'hf', 'st', 'general']
+const CATEGORIES = ['ib', 'pe', 'hf', 'st', 'behavioral', 'general']
 
 export default function ProblemsPage() {
   const [questions, setQuestions] = useState<Question[]>([])
